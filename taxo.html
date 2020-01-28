@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html>
+<title>Taxonomy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.testhover:hover {
+    background-color: #7289da !important;
+}
+.testhoverGray:hover {
+    background-color: #202225 !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input {
+  border-top: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  background-color: #202225;
+  padding: 10px;
+  font-size: 16px;
+}
+input:active,
+input:focus {
+	outline: none !important;
+    border-color: #7289da;
+    box-shadow: 0 0 5px #7289da;
+}
+input[type=text] {
+  background-color: #202225;
+  color: #fff;
+  width: 100%;
+}
+input[type=password] {
+  background-color: #202225;
+  color: #fff;
+  width: 100%;
+}
+button:active,
+button:focus {
+	outline: none !important;
+    border-color: #7289da;
+}
+textarea {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+textarea:active,
+textarea:focus {
+	outline: none !important;
+    border-color: #d4d4d4;
+    box-shadow: 0 0 5px #d4d4d4;
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #4f545c;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9; 
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: #ff9a7a !important; 
+  color: #ffffff; 
+}
+.overlay{
+    opacity:0.75;
+    background-color:#36393f;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:2000;
+	text-align: center;
+}
+.outer {
+  height: 95vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.inner {
+  flex: 1;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #202225 #36393f;
+}
+
+.tooltip {
+  position: relative;
+  /* display: inline-block; */
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #202225;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0%;
+  margin-left: 0px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible !important; 
+}
+
+.tooltip .tooltiptextcenter {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #202225;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -150px;
+}
+
+.tooltip:hover .tooltiptextcenter {
+  visibility: visible !important; 
+}
+
+.tooltip .tooltiptextleft {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #202225;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 50000;
+  top: 0%;
+  left: 75%;
+}
+
+.tooltip:hover .tooltiptextleft {
+  visibility: visible !important; 
+}
+
+.parent { display: -ms-flex; display: -webkit-flex; display: flex; }
+.parent>div { flex:1; }
+
+ul, #myUL {
+  list-style-type: none;
+}
+
+#myUL {
+  margin: 0;
+  padding: 0;
+}
+
+.caret {
+  cursor: pointer;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none;
+}
+
+.caret::before {
+  content: "+";
+  font-weight: bold;
+  color: #7289da ;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.caret-down::before {
+
+  content: "-";  
+}
+
+.nested {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #36393f; 
+}
+::-webkit-scrollbar-thumb {
+  background: #202225;  
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+</style>
+
+<body style="background:#36393f" onload="setUpPage()" onresize="handleSize()" id="mainBody">
+
+<!-- login -->
+<section class="w3-container w3-center w3-content w3-card-2" style="background: #2f3136; position: absolute;  top: 50%; left: 50%;
+					transform: translate(-50%, -50%);  text-align: center; width: 20cm; max-width: 75%;" id="loginCard">
+  <h2 class="w3-wide unselectable w3-text-light-grey">Taxonomy</h2>
+  <p class="w3-justify">
+	<section class = "w3-center">
+		<input class="w3-text-light-grey w3-round" type="text" id="UsernameInput" style="margin-bottom: 5px;" placeholder="Username" > 
+		<input class="w3-text-light-grey w3-round" type="password" id="PassInput" placeholder="Password"> 
+	</section>
+	<p class="w3-text-light-grey" id="responseField" align="left" style="padding-left: 10px;"></p>
+	<button class="w3-button w3-text-light-grey w3-round" onclick="logIn()" style="margin-bottom: 10px; background: #7289da;">Login</button>
+	<button class="w3-button w3-text-light-grey w3-round" onclick="RegisterUser()" style="margin-bottom: 10px; background: #4f545c;">Register</button>
+  </p>
+  <br>
+</section>
+
+<div id="overlayDiv" class="overlay unselectable" hidden>
+	<div style = "position: relative;  font-size: 32px; top: 50%; transform: translateY(-50%);" class="w3-text-white">Loading ...</div>
+</div>
+
+<div id="MenuDiv" hidden>
+	<div id="overlayMenuDiv" style="opacity:0.75; background-color:#36393f;
+	position:fixed; width:100%; height:100%; top:0px; left:0px; z-index:1000;" onclick="showMenu(0)"></div>
+
+	<div id="contextMenu"class="w3-card-2 w3-rounded" 
+	style="width: 20cm; position: absolute;  top: 50%; left: 50%; transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; 
+		padding: 10px; 	text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey">New context</h4>
+		<section class = "w3-center">
+				<input class="w3-text-light-grey w3-round" type="text" id="newContextInput" placeholder="Context name" >  
+		</section>
+		<button class="w3-button w3-text-light-grey w3-round" onclick="addNewContext()" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c; ">Add</button>
+	</div>
+
+	<div id="addNewQueryMenu" class="w3-card-2 w3-rounded" 	style="width: 20cm; position: absolute;  top: 50%; left: 50%;
+		transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey">Add query to context</h4>
+		<section class = "w3-center">
+				<input class="w3-text-light-grey w3-round" type="text" id="newQueryNameInput" placeholder="Query name" >  
+		</section>
+		<button class="w3-button w3-text-light-grey w3-round" onclick="saveQueryToContext()" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c; ">Add</button>
+	</div>
+	
+	<div id="addNewBmMenu" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
+		transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey">Add bookmark</h4>
+		<section class = "w3-center">
+			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter bookmark name" id="newBmName" style="margin-bottom: 5px;" >
+			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter URL" id="newBmUrl" style="margin-bottom: 5px;">
+			<input class="w3-text-light-grey w3-round" id="fileToUpload" type="file" style="  background-color: #202225;color: #fff;width: 100%;"/>
+		</section>
+		<button class="w3-button w3-text-light-grey w3-round" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c;" onclick="addBm()">Add</button>
+	</div>
+
+	<div id="connectBmToConceptMenu" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
+		transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey">Add Concept To Bookmark</h4>
+		<section class = "w3-center">
+			<form autocomplete="off" action="/action_page.php">
+				<div class="autocomplete" style="width:100%;">
+					<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter Bookmark Name" id="bmName">
+				</div>
+			</form>
+			<p>
+				<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c;" onclick="addTag()">Add</button>
+			</p>
+		</section>
+	</div>
+
+	<div id="infoBox" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
+	transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey" id="infoBoxText"></h4>
+		<button class="w3-button w3-text-light-grey w3-round" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c;" onclick="showMenu(0)">OK</button>
+	</div>
+</div>
+
+<section class="w3-row-padding w3-center"  id="taxoSection" hidden>
+	<section style="padding: 10px 0px; margin: 0px; width: 100%;z-index: 100" id="navigationHorizontal" hidden>
+		<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="SearchButton2"
+			onclick="switchView(2)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">search</i></button>
+		<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="NavigationButton2"
+			onclick="switchView(1)"><i class="material-icons" style="color:#f1f1f1; padding: 3px 0px 0px 1px;">device_hub</i></button>
+		<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkListButton2"
+			onclick="switchView(3)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">bookmarks</i></button>
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkTreeButton2"
+			onclick="switchView(4)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">account_tree</i></button>
+	</section>
+
+	<div class="parent">
+		<section style="padding: 10px 0px; margin: 0px; width: 1%; max-width: 10%; z-index: 100" id="navigationVertical">
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="SearchButton"
+				onclick="switchView(2)">
+					<i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">search</i>
+			</button>
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="NavigationButton"
+				onclick="switchView(1)"><i class="material-icons" style="color:#f1f1f1; padding: 3px 0px 0px 1px;">layers</i></button>
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkListButton"
+				onclick="switchView(3)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">bookmarks</i></button>
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkTreeButton"
+				onclick="switchView(4)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">account_tree</i></button>
+		</section>
+				
+		<div class="w3-container w3-center w3-content"  style="min-width: 90%; max-width: 90%; padding: 0px;" >
+			<div id="taxoNavCard">
+				<article class="w3-third">
+					<h4 class="unselectable w3-text-light-grey w3-wide ">Parents</h4>
+					<div id="taxoNavConParents" style="margin-top: 15px"> </div>
+				</article>
+	
+				<article class="w3-third">
+					<h4 class="unselectable w3-text-light-grey w3-wide ">Word</h4>
+					<div style="margin-left: 15px; margin-right: 15px; margin-top: 15px">
+						<div id="taxoNavConWord"> </div>
+						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
+								onclick="showMenu(5)">Add To Bookmark</button>
+						<div id="ConnectedThings" class="w3-container w3-center w3-content w3-card-2" style="background: #36393f;" hidden>
+							<h4 class="w3-text-light-grey" style="margin: 2px">Bookmarks</h4>
+							<div id="ConnectedThingsCon" style="padding-bottom: 10px;"></div>
+						</div>
+					</div>
+				</article>
+	
+				<article class="w3-third">
+					<h4 class="unselectable w3-text-light-grey w3-wide ">Children</h4>
+					<div style="overflow: auto; max-height: 90vh">
+						<div id="taxoNavConChildren"> </div>
+					</div>
+				</article>
+			</div>
+			
+			<div id="searchSection" hidden>
+				<div class="w3-half">
+						<div id="taxoSearchCard" class="w3-container w3-center">
+							<div class="outer">
+								<h4 class="w3-wide unselectable w3-text-light-grey">Search</h4>
+								<div class="w3-card-2 w3-round" style="padding: 5px 15px; margin: 5px; background: #2f3136;">
+									<div class="parent"  style="width:100%; margin-top: 10px;">
+											<section class = "w3-center" style="width: 78%">
+												<form autocomplete="off" action="/action_page.php">
+													<div class="autocomplete" style="width:100%;">
+														<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter bookmark name or taxonomy concept" id="TaxoSearchInput">
+													</div>
+												</form>
+											</section>
+											<div style="padding: 1px; width:20%; margin-left: 1%;">
+												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da"
+														onclick="searchTaxo()">Search</button>
+											</div>
+									</div>
+									<div class = "parent" style="margin: 10px 0px;">
+										<select class="w3-button w3-round w3-text-light-grey" name="ChildrenDropdown" id="ChildrenDropdown" style="border: 0px; background: #4f545c; width: 30%;">
+											<option value="1">With Children</option>
+											<option value="2">Without Children</option>
+										</select>
+										<div class="tooltip w3-round w3-text-light-grey unselectable testhover" 
+										style ="background: #4f545c; width: 20%; margin: 0px 5px;padding:8px 16px;vertical-align:middle;">
+											<div>Help</div>
+											<div class="tooltiptextcenter">
+												<p>And search: a & b</p>
+												<p>Or search: a | b</p>
+												<p>Does not include: ! b</p>
+												<p>Brackets: a & (b | c)</p>
+											</div>
+										</div>
+										<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)" >Add To Context</button>
+									</div>
+								</div>
+	
+								<div class="inner">
+									<br>	
+									<div id="bmSearchCon"> </div>
+									<div id="taxoSearchCon"> </div>
+								</div>
+							</div>
+							<br>
+						</div>
+				</div>
+				<article class="w3-half">
+					<div class="w3-container w3-center">
+						<div class="outer">
+							<h4 class="w3-wide unselectable; w3-text-light-grey">Context</h4>
+							<div class="inner">
+									<div id="contextSection" style="margin-top: 5px;"></div>
+							</div>
+							<p class = "w3-center">
+								<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c;" onclick="showMenu(1)" >Add new context</button>
+								<select class="w3-button w3-round w3-text-light-grey" id="contextDropdown"  onchange="selectContext()" style="border: 0px; margin-left: 5px; background: #4f545c;"></select>
+							</p>
+						</div>						
+					</div>
+				</article>
+			</div>
+	
+			<div id="bmSectionWrap" hidden>
+				<article class="w3-third">
+					<div id="bmSection">
+						<div id="userBmsCard" class="w3-container w3-center w3-content"> 
+							<div class="outer w3-center">
+								<h4 class="w3-wide unselectable w3-center w3-text-light-grey">User Bookmarks</h4>
+								<div class="w3-center">
+									<button class="w3-button w3-text-light-grey w3-round" onclick="showMenu(3)"
+										style="background: #4f545c; margin-bottom: 10px; width: 200px;;">Add Bookmark</button>
+								</div>
+								<div id="bmsCon" class="inner"> </div>
+							</div> 
+						</div>
+					</div>
+				</article>
+		
+				<article class="w3-twothird" >
+					<div id="bmDetails">
+						<div id="BmDetCard" class="w3-container w3-center w3-content"> 
+							<div class="outer">
+									<h4 class="w3-wide unselectable w3-center w3-round w3-text-light-grey">Bookmark Details</h4>
+									<div id="bmDetCon"> </div>
+									<img id= "testImage" width="200" class="w3-center"></img>
+									<img id= "testImage2" width="200" class="w3-center" hidden></img>
+									<div class="w3-card-2 inner w3-round" style="margin: 10px; background: #2f3136;">
+										<h4 class="w3-wide unselectable w3-text-light-grey">Add Concepts To Bookmark</h4>
+										<div class="parent" style="width:100%; margin-top: 10px; padding: 10px">
+											<section class = "w3-center" style="width: 78%;">
+												<form autocomplete="off" action="/action_page.php">
+													<div class="autocomplete" style="width:100%;">
+														<input class="w3-text-light-grey w3-round" type="text" placeholder="Taxonomy Search" id="TaxoSearchInput2">
+													</div>
+												</form>
+											</section>
+											<div style="padding: 1px; width:20%; margin-left: 1%;">
+												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da " onclick="searchTaxo2()">Search</button>
+											</div>
+										</div>
+										<div>
+											<div id="taxoSearchCon2" style="background: #2f3136;"> </div>
+										</div>
+									</div>
+							</div> 
+						</div>
+					</div>
+				</article>
+			</div>
+			<div id="bmTreeView" hidden>
+				<h4 class="w3-wide unselectable; w3-text-light-grey">Bookmark Tree</h4>
+				<button class="w3-button w3-text-light-grey w3-round" onclick="showTreeView()"
+				style="background: #4f545c; margin-bottom: 10px; width: 200px;;">Tree View</button>
+				<ul id="myUL" style="text-align: left;"></ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script src="FileSaver.js"></script>
+<script>
+//var serverAddress = "http://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoForward.php";
+//var taxoIndexAddress = "http://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoIndex.txt";
+
+// var serverAddress = "http://192.168.1.7/taxoForwardLocal.php";
+// var taxoIndexAddress = "http://192.168.1.7/taxoIndex.txt";
+
+var serverAddress = "http://localhost/taxoForwardLocal.php";
+var taxoIndexAddress = "http://localhost/taxoIndex.txt";
+
+var windowWidth = window.outerWidth;
+
+var currUsername;
+var currPassword;
+
+var currTaxoId;
+var currTaxoName;
+
+var userBookmarks = [];
+var bmsDict = {};
+var currBookmarks = [];
+var taxoIndex = [];
+var currentDetails = "";
+
+var taxoCache = {};
+
+var contexts = [];
+var currentContext = 0;
+
+var sendInChunksbookmark = "";
+var sendInChunksdataToSend = "";
+var sendInChunksiter = "";
+
+var firstLoadDoNotShowTaxoNav = true;
+
+function showLoadingOverlay(value){
+	document.getElementById("overlayDiv").hidden = !value;
+}
+
+function setUpPage(){
+	navigationBarResize();
+	loadTaxoIndex();
+
+	var input = document.getElementById("PassInput");
+	input.addEventListener("keyup", function(event) {
+	  event.preventDefault();
+	  if (event.keyCode === 13) {
+		logIn();
+	  }
+	});
+}
+
+function handleSize(){
+	windowWidth = window.outerWidth;
+	navigationBarResize();
+}
+
+function navigationBarResize(){
+	if(windowWidth < 800){
+		document.getElementById("navigationVertical").hidden = true;
+		document.getElementById("navigationHorizontal").hidden = false;
+	}
+	else{
+		document.getElementById("navigationVertical").hidden = false;
+		document.getElementById("navigationHorizontal").hidden = true;
+	}
+}
+
+function loadTaxoIndex() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     taxoIndex = this.responseText.split('\n');
+	 autocomplete(document.getElementById("TaxoSearchInput"), taxoIndex, searchTaxo);
+	 autocomplete(document.getElementById("TaxoSearchInput2"), taxoIndex, searchTaxo2);
+    }
+  };
+  xhttp.open("GET", taxoIndexAddress, true);
+  xhttp.send();
+}
+
+async function loggedIn(){
+	switchView(2);
+
+	await getBms();
+	await loadNavigation();
+	await getContexts(0);
+	
+	document.getElementById("taxoSection").hidden = false;
+	document.getElementById("loginCard").hidden = true;
+}
+
+function switchView(view){
+	var views = [
+		document.getElementById("taxoNavCard"),
+		document.getElementById("searchSection"),
+		document.getElementById("bmSectionWrap"),
+		document.getElementById("bmTreeView"),
+	];
+
+	var buttons = [
+		document.getElementById("NavigationButton"),
+		document.getElementById("SearchButton"),
+		document.getElementById("BookmarkListButton"),
+		document.getElementById("BookmarkTreeButton")
+	];
+
+	for(var i = 0; i < views.length; i++){
+		if(i == view - 1)
+		{
+			views[i].hidden = false;
+			buttons[i].style.background = "#7289da";
+		}
+		else{
+			views[i].hidden = true;
+			buttons[i].style.background = "#36393f";
+		}
+	}
+}
+
+function showMenu(menu){
+	var menuDiv = document.getElementById("MenuDiv");
+
+	if(menu == 0){
+		document.getElementById("infoBoxText").innerHTML = "";
+		menuDiv.hidden = true;
+		return;	
+	}
+	else{
+		menuDiv.hidden = false;
+	}
+
+	var menus = [
+		document.getElementById("contextMenu"),
+		document.getElementById("addNewQueryMenu"),
+		document.getElementById("addNewBmMenu"),
+		document.getElementById("infoBox"),
+		document.getElementById("connectBmToConceptMenu")
+	];
+	
+	for(var i = 0; i < menus.length; i++){
+		if(i == menu - 1)
+		{
+			menus[i].hidden = false;
+		}
+		else{
+			menus[i].hidden = true;
+		}
+	}
+}
+
+function showMessage(message){
+	document.getElementById("infoBoxText").innerHTML = message;
+	showMenu(4);
+}
+
+function logIn(){
+	currUsername = document.getElementById("UsernameInput").value;
+	currPassword = document.getElementById("PassInput").value;
+	
+	var message = { fun: "login", username: currUsername, password: currPassword };
+	var messageJSON = JSON.stringify(message);
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myObj = JSON.parse(this.responseText);
+			document.getElementById("responseField").innerHTML = myObj.result;
+			if(myObj.result == "success"){
+				loggedIn();
+			}
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function RegisterUser(){
+	var message = { fun: "regUser", username: document.getElementById("UsernameInput").value, password: document.getElementById("PassInput").value };
+	var messageJSON = JSON.stringify(message);
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myObj = JSON.parse(this.responseText);
+			document.getElementById("responseField").innerHTML = myObj.result;
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+//NAVIGATION
+
+function loadNavigation(){
+	 updateNavigation("00001740");
+}
+
+function updateNavigation(taxoWord){
+	event.stopPropagation();
+	showLoadingOverlay(true);
+
+	if(taxoCache[taxoWord] != undefined)
+	{
+		addNavResults(taxoCache[taxoWord]);
+	}	
+
+	var message = { fun: "searchTaxo", username: currUsername, password: currPassword, word: taxoWord };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			if(this.responseText != ""){
+				var myObj = JSON.parse(this.responseText);
+				addNavResults(myObj.result);
+
+				taxoCache[taxoWord] = myObj.result;
+
+				if(firstLoadDoNotShowTaxoNav == false){
+					switchView(1);
+				}
+				firstLoadDoNotShowTaxoNav = false;
+			}
+			else{
+				showMessage("An error occured");
+				showLoadingOverlay(false);
+			}
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function addNavResults(results){
+	for(var j = 0; j < results.length; j++){
+	
+		var myNode;
+		var connectedThings;
+		
+		if(j == 0){
+			myNode = document.getElementById("taxoNavConWord");
+			connectedThings = document.getElementById("ConnectedThings");
+		}
+		else if(j == 1){
+			myNode = document.getElementById("taxoNavConParents");
+		}
+		else{
+			myNode = document.getElementById("taxoNavConChildren");
+		}
+		
+		while (myNode.firstChild) {
+			myNode.removeChild(myNode.firstChild);
+		}
+		
+		if(results[j][1].length > 0){
+			
+			var countTmp;
+			
+			if(j == 0){ countTmp = 1; }
+			else { countTmp = results[j][1].length;}
+			
+			for (var i = 0; i < countTmp ; i++) { 
+				var tmpResult
+				
+				if(j == 0)
+				{
+					tmpResult = results[j][1]; 
+					
+					currTaxoId = tmpResult[0];
+					currTaxoName = tmpResult[1];
+				}
+				else { tmpResult= results[j][1][i];}
+				
+				if (tmpResult[1] == undefined){
+					break;
+				}
+				
+				var card = document.createElement("div");
+				var textDiv = document.createElement("div");
+
+				if(j != 0){
+					card.classList.add("testhover");
+					var tmp = "";
+					tmp = tmpResult[0];
+					tmp = "updateNavigation('"+tmp+"')";
+					card.setAttribute("onclick",tmp);
+				}
+
+				card.classList.add("w3-card-2");
+				card.classList.add("w3-round");
+
+				var header = document.createElement("header");
+				header.classList.add("w3-container");
+				card.appendChild(header);
+				var h1 = document.createElement("h4");
+				
+				if(j!= 0){
+					var h1 = document.createElement("h5");
+				}
+				
+				h1.style.margin = "5px 0px";
+				h1.classList.add("w3-text-light-grey");
+
+				if(j != 0){
+					header.classList.add("unselectable");
+				}
+				
+				card.setAttribute("style", "margin-top: 7px;  margin-bottom: 7px;  margin-right: 5px;  margin-left: 5px;");
+				card.style.padding = "0px";
+
+				if(j == 0){
+					card.style.background = "#7289da";
+					card.style.paddingBottom = "10px";
+				}
+				else{
+					card.style.background = "#2f3136";
+				}
+			
+				var title = tmpResult[1].replace(/,/g, ", ");
+				var node = document.createTextNode(title);
+				h1.appendChild(node);
+				h1.classList.add("w3-text-black");
+				header.appendChild(h1);
+				
+				if(j == 0){ 
+					var para = document.createElement("p");
+					var text = document.createTextNode(tmpResult[3]);
+					para.appendChild(text);
+					//para.classList.add("unselectable");
+					para.setAttribute("style", "margin: 5px;");
+					para.classList.add("w3-text-light-grey");
+					textDiv.appendChild(para);
+
+					if(bmsDict[currTaxoId] != undefined){
+						var connectedThingsCon = document.getElementById("ConnectedThingsCon");
+						
+						while (connectedThingsCon.firstChild) {
+							connectedThingsCon.removeChild(connectedThingsCon.firstChild);
+						}
+
+						for(var y = 0; y < bmsDict[currTaxoId].length; y++){		
+							var para2 = document.createElement("h5");
+							para2.classList.add("unselectable");
+							para2.classList.add("testhover");
+							para2.classList.add("w3-text-light-grey");
+							para2.classList.add("w3-round");
+							para2.style.background = "#36393f";
+							para2.style.margin = "5px";
+							var node2 = document.createTextNode(bmsDict[currTaxoId][y]);
+						
+							var tmp = "showBmDetails('"+bmsDict[currTaxoId][y]+"',true)";
+							para2.setAttribute("onclick",tmp);
+
+							para2.appendChild(node2);
+
+							connectedThingsCon.appendChild(para2);
+						}
+						
+						connectedThings.hidden = false;
+					}
+					else{
+						connectedThings.hidden = true;
+						
+					}
+				}
+
+				card.appendChild(textDiv);
+				
+				myNode.appendChild(card);
+			}
+		}	
+	}
+	showLoadingOverlay(false);
+}
+
+function getBms(){
+	var message = { fun: "getUserBookmarks", username: currUsername, password: currPassword };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myObj = JSON.parse(this.responseText);
+			bmsDict = {};
+			userBookmarks = myObj.result;
+			
+			for(var i = 0; i< userBookmarks.length; i++){
+				for(var j = 0; j< userBookmarks[i][2].length; j++){
+					if(bmsDict[userBookmarks[i][2][j][1]] == undefined){
+						bmsDict[userBookmarks[i][2][j][1]] = [userBookmarks[i][0]];
+					}
+					else{
+						bmsDict[userBookmarks[i][2][j][1]].push(userBookmarks[i][0]);
+					}		
+				}	
+			}
+
+			if(currentDetails == "" && userBookmarks.length > 0){
+				showBmDetails(userBookmarks[0][0],false);
+			}
+			else{
+				showBmDetails(currentDetails,false);
+			}
+
+			addCurrBms(myObj.result);
+			addUserBms(myObj.result);
+			return 1;
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function addUserBms(bms){
+	var myNode = document.getElementById("bmsCon");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+	if(bms.length > 0){
+		for (var i = 0; i < bms.length; i++) { 
+				var card = document.createElement("div");
+				card.style.margin = "7px";
+				card.style.background = "#2f3136";
+				card.classList.add("w3-round");
+				card.classList.add("w3-card-2");
+				card.classList.add("testhover");
+				card.style.padding = "5px";
+
+				var header = document.createElement("header");
+				header.classList.add("w3-container");
+				header.classList.add("unselectable");
+				header.classList.add("w3-text-light-grey");
+				card.appendChild(header);
+
+				var h1 = document.createElement("h5");
+				h1.style.margin = "0px";
+				h1.style.padding = "0px";
+				var node = document.createTextNode(bms[i][0]);
+				var nodeDiv = document.createElement("div");					
+				nodeDiv.appendChild(node);
+				nodeDiv.classList.add("w3-text-light-grey");
+				h1.appendChild(nodeDiv);
+				var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
+				h1.setAttribute("onclick",tmpOnClick);
+
+				header.appendChild(h1);
+
+				myNode.appendChild(card);
+		}
+	}		
+}
+
+function addCurrBms(bms){
+	currBookmarks = [];
+
+	if(bms.length > 0){
+		for (var i = 0; i < bms.length; i++) { 
+				currBookmarks.push(bms[i][0]);
+		}
+	}
+
+	autocomplete(document.getElementById("bmName"), currBookmarks, addTag);	
+}
+
+function showBmDetails(bookmark, showDetails){
+	currentDetails = bookmark;
+
+	var resToClear = document.getElementById("taxoSearchCon2");
+	while (resToClear.firstChild) {
+		resToClear.removeChild(resToClear.firstChild);
+	}
+
+	var bm;
+	for(var i = 0; i < userBookmarks.length; i++){
+		if(userBookmarks[i][0] == bookmark){
+			bm = userBookmarks[i];
+			break;
+		}
+	}
+
+	var myNode = document.getElementById("bmDetCon");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+
+	if(bm == undefined){
+		return;
+	};
+
+	var card = document.createElement("div");
+	card.style.margin = "7px";
+	card.style.padding = "5px";
+	card.classList.add("w3-round");
+	card.style.background = "#2f3136";
+	card.classList.add("w3-card-2")
+
+	var header = document.createElement("header");
+	header.classList.add("w3-container");
+	header.classList.add("w3-text-light-grey");
+	header.classList.add("unselectable");
+	card.appendChild(header);
+
+	var h1 = document.createElement("h4");
+	h1.style.marginBottom = "0px";
+	h1.style.marginTop = "0px";
+	var node = document.createTextNode(bm[0]);
+	var nodeDiv = document.createElement("div");					
+	nodeDiv.appendChild(node);
+	nodeDiv.classList.add("w3-text-light-grey");
+	h1.appendChild(nodeDiv);
+	header.appendChild(h1);
+
+	var a = document.createElement("a");
+	var aDiv = document.createElement("div");
+	aDiv.innerHTML = (bm[1]);
+	a.style.color = "#7289da";
+	a.target="_blank"
+	aDiv.style = "width: 100%; text-overflow: ellipsis; white-space: nowrap;overflow: hidden; margin-bottom: 5px;";
+	a.appendChild(aDiv);
+
+	if(bm[1].includes("http://")|| bm[1].includes("https://")){
+		a.href = bm[1];
+	}
+	else{
+		a.href = "//" + bm[1];
+	}
+
+	card.appendChild(a);
+
+	var btn2 = document.createElement("button");
+	var t3= document.createTextNode("Download");
+	btn2.appendChild(t3);
+	btn2.classList.add("w3-button");
+	btn2.classList.add("w3-round");
+	btn2.classList.add("w3-text-light-grey");
+	btn2.style.marginTop = "5px";
+	btn2.style.marginRight = "5px";
+	btn2.style.background = "#7289da";
+	var tmp3 = bm[0];
+	tmp3 = "getBookmarkFile('"+tmp3+"')";
+	btn2.setAttribute("onclick",tmp3);
+	card.appendChild(btn2);	
+
+	var btn = document.createElement("button");
+	var t2 = document.createTextNode("Delete");
+	btn.appendChild(t2);
+	btn.classList.add("w3-button");
+	btn.classList.add("w3-round");
+	btn.classList.add("w3-text-light-grey");
+	btn.style.marginTop = "5px";
+	btn.style.background = "#4f545c";
+	var tmp2 = bm[0];
+	tmp2 = "removeBookmark('"+tmp2+"')";
+	btn.setAttribute("onclick",tmp2);
+	card.appendChild(btn);
+
+	var card2 = document.createElement("div");
+
+	if(bm[2].length > 0)
+	{
+		var spaceDiv = document.createElement("div");
+		spaceDiv.style.height = "8px";
+		card.appendChild(spaceDiv);
+		
+		for (var j = 0; j < bm[2].length; j++) { 
+			var para2 = document.createElement("div");
+			para2.classList.add("w3-card-2");
+			para2.style.margin = "10px";
+			para2.style.padding = "3px";
+			para2.style.background = "#4f545c";
+			para2.classList.add("unselectable");
+			para2.classList.add("testhoverGray");
+			para2.classList.add("w3-round");
+			para2.classList.add("w3-text-light-grey");
+			var tmpTitle = bm[2][j][0];
+			var title = tmpTitle.replace(/,/g, ", ");
+			var node2 = document.createTextNode(title);
+		
+			var tmp = "";
+			tmp = bm[2][j][1];
+			tmp = "updateNavigation('"+tmp+"')";
+			para2.setAttribute("onclick",tmp);
+
+			para2.appendChild(node2);
+			card2.appendChild(para2);
+		}
+	}
+
+	card2.style.padding = "0px";
+	card.appendChild(card2);
+
+	myNode.appendChild(card);
+
+	if(showDetails){
+		switchView(3);
+	}
+}
+
+//TREE
+
+function showTreeView(){
+	showLoadingOverlay(true);
+
+	var message = { fun: "getBookmarkTree", username: currUsername, password: currPassword};
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			if(this.responseText != ""){
+				var myObj = JSON.parse(this.responseText);
+				
+				showLoadingOverlay(false);
+
+				populateTreeView(myObj.result);
+			}
+			else{
+				showMessage("An error occured");
+				showLoadingOverlay(false);
+			}
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function populateTreeView(results){
+	var myNode = document.getElementById("myUL");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+
+	var resultsLength = 0;
+
+	if(results != undefined){
+		resultsLength =  results.length;
+	}
+	
+	if(resultsLength > 0){	
+		populateTreeViewHelper(myNode, results)
+		var toggler = document.getElementsByClassName("caret");
+		var i;
+
+		for (i = 0; i < toggler.length; i++) {
+		toggler[i].addEventListener("click", function() {
+			this.parentElement.querySelector(".nested").classList.toggle("active");
+			this.classList.toggle("caret-down");
+		});
+		}
+	}		
+}
+
+function populateTreeViewHelper(parent, children){
+	var card = document.createElement("li");
+	card.style.margin = " 1px 12px";			
+	card.style.padding = "1px 3px";
+	//card.classList.add("w3-card-2");
+	card.classList.add("w3-round");
+	card.style.background = "#2f3136";
+
+
+	var header = document.createElement("span");
+	header.classList.add("unselectable");
+	header.classList.add("caret");
+	header.classList.add("w3-text-light-grey");
+	header.style.padding = "2px 5px";
+	card.appendChild(header);
+
+	var title = children[0][1].split(",")[0];
+	var node = document.createTextNode(title);
+	header.appendChild(node);
+	header.classList.add("w3-text-light-grey");
+	parent.appendChild(card);
+
+	var card2 = document.createElement("ul");		
+	card2.style.padding = "1px";
+	card2.classList.add("w3-round");
+	card2.classList.add("nested");
+	card2.style.background = "#202225";
+	card2.style.background = "#2f3136";
+	card.appendChild(card2);
+
+	for (var i = 0; i < children[0][2].length; i++) { 
+		var card3 = document.createElement("li");
+		card3.style.margin = " 5px 12px";			
+		card3.style.padding = "1px 3px";
+		card3.classList.add("w3-card-2");
+		card3.classList.add("w3-round");
+		card3.style.background = "#202225";
+		card3.classList.add("testhover");
+
+
+		var header2 = document.createElement("header");
+		header2.classList.add("unselectable");
+		header2.classList.add("w3-text-light-grey");
+		header2.style.padding = "2px 5px";
+		card3.appendChild(header2);
+
+		var title2 = children[0][2][i];
+		var node2 = document.createTextNode(title2);
+		header2.appendChild(node2);
+		header2.classList.add("w3-text-light-grey");
+		card2.appendChild(card3);
+
+		var tmpOnClick = "showBmDetails('"+children[0][2][i]+"',true)";
+		card3.setAttribute("onclick",tmpOnClick);
+	}
+
+	for (var i = 1; i < children.length; i++) { 
+		populateTreeViewHelper(card2, children[i])
+	}
+}
+
+//TAXO SEARCH
+
+function searchTaxo(){
+	showLoadingOverlay(true);
+	
+	var currSearchWord = document.getElementById("TaxoSearchInput").value.toLowerCase().trim();
+	
+	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			if(this.responseText != ""){
+				var myObj = JSON.parse(this.responseText);
+				addSearchResults(myObj.result);
+				searchBms();
+			}
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function searchTaxo2(){
+	showLoadingOverlay(true);
+	var currSearchWord = document.getElementById("TaxoSearchInput2").value.toLowerCase().trim();
+
+	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myObj = JSON.parse(this.responseText);
+			addSearchResults2(myObj.result);
+			showLoadingOverlay(false);
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function addSearchResults(results){
+	var myNode = document.getElementById("taxoSearchCon");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+
+	var resultsLength = 0;
+
+	if(results != undefined){
+		resultsLength =  results.length;
+	}
+	
+	var resNode = document.createElement("h4");
+	resNode.style = "margin-top: 20px";
+	resNode.classList.add("w3-text-light-grey");
+	var resCount = document.createTextNode("Taxonomy search: " + resultsLength + " results");
+	resNode.appendChild(resCount)
+	myNode.appendChild(resNode);
+		
+	if(resultsLength > 0){	
+		for (var i = 0; i < results.length; i++) { 
+				var card = document.createElement("div");
+				card.style.margin = "7px";		
+				card.style.padding = "3px";
+				card.classList.add("w3-card-2");
+				card.classList.add("w3-round");
+				card.classList.add("parent");
+				card.style.background = "#4f545c";
+				card.classList.add("testhoverGray");
+
+				var titleSplit = results[i][1].split(",");
+				var tmp = "addToSearchField('"+titleSplit[0]+"','"+results[i][0]+"')";
+				card.setAttribute("onclick",tmp);
+	
+				var hoverArea = document.createElement("div");
+				hoverArea.style.width = "10%";
+				hoverArea.classList.add("tooltip");
+				hoverArea.classList.add("w3-center");
+				hoverArea.classList.add("testhover");
+				hoverArea.classList.add("w3-round");
+				hoverArea.style.background = "#36393f";
+				hoverArea.style.padding = "5px";
+				card.appendChild(hoverArea);
+
+				var header = document.createElement("header");
+				header.classList.add("unselectable");
+				header.classList.add("w3-text-light-grey");
+				header.style.width = "90%";
+				header.style.padding = "2px 10px";
+				card.appendChild(header);
+			
+				var tmpTitle = results[i][1];
+				var title = tmpTitle.replace(/,/g, ", ");
+				var node = document.createTextNode(title);
+				header.appendChild(node);
+				header.classList.add("w3-text-light-grey");
+
+				var tooltiptextDiv = document.createElement("div");
+
+				var tooltiptextSpan = document.createElement("span");
+				tooltiptextSpan.innerHTML = results[i][3];
+				tooltiptextDiv.appendChild(tooltiptextSpan);
+				tooltiptextDiv.classList.add("tooltiptext");
+				hoverArea.appendChild(tooltiptextDiv);
+
+				var butPara = document.createElement("p");
+
+				var btn1 = document.createElement("button");
+				var t3 = document.createTextNode("Open");
+				btn1.appendChild(t3);
+				btn1.classList.add("w3-button");
+				btn1.classList.add("w3-round");
+				btn1.classList.add("w3-text-light-grey");
+				btn1.style.margin = "0px 0px 0px 5px";
+				btn1.style.background ="#4f545c";
+				var tmp3 = "";
+				tmp3 = results[i][0];
+				tmp3 = "updateNavigation('"+tmp3+"')";
+				btn1.setAttribute("onclick",tmp3);
+				butPara.appendChild(btn1);
+
+				var btn2 = document.createElement("button");
+				var t2 = document.createTextNode("Add to context");
+				btn2.appendChild(t2);
+				btn2.classList.add("w3-button");
+				btn2.classList.add("w3-round");
+				btn2.classList.add("w3-text-light-grey");
+				btn2.style.margin = "0px 0px 0px 5px";
+				btn2.style.background ="#43b582";
+				var tmp2 = results[i][1];
+				tmp2 = "addTaxoTagToContext('"+results[i][0]+"','"+tmp2+"')";
+				btn2.setAttribute("onclick",tmp2);
+				butPara.appendChild(btn2);
+
+				tooltiptextDiv.appendChild(butPara);
+
+				myNode.appendChild(card);
+		}
+	}		
+}
+
+function addSearchResults2(results){
+	var myNode = document.getElementById("taxoSearchCon2");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+	
+	var resNode = document.createElement("h4");
+	resNode.style = "margin-top: 20px";
+	resNode.classList.add("w3-text-light-grey");
+	var resCount = document.createTextNode("Taxonomy search: " + results.length + " results");
+	resNode.appendChild(resCount)
+	myNode.appendChild(resNode);
+		
+	if(results.length > 0){	
+		for (var i = 0; i < results.length; i++) { 
+				var card = document.createElement("div");
+				card.style.margin = "7px";
+				card.style.background = "#36393f";	
+				card.classList.add("testhover");
+				card.classList.add("w3-round");
+				
+				var tmp = "addTag2('"+currentDetails+"','"+ results[i][0] +"','"+ results[i][1]+"')";
+				card.setAttribute("onclick",tmp);		
+				
+				var card2 = document.createElement("div");
+				card.classList.add("w3-card-2")
+				var header = document.createElement("header");
+				header.classList.add("w3-container");
+				header.classList.add("unselectable");
+				header.classList.add("w3-text-light-grey");
+				card.appendChild(header);
+				var h1 = document.createElement("h4");
+			
+				var tmpTitle = results[i][1];
+				var title = tmpTitle.replace(/,/g, ", ");
+				var node = document.createTextNode(title);
+				h1.appendChild(node);
+				header.appendChild(h1);
+			
+				var para = document.createElement("div");
+				var text = document.createTextNode(results[i][3]);
+				para.appendChild(text);
+				para.classList.add("unselectable");
+				para.classList.add("w3-text-light-grey");
+				card2.appendChild(para);	
+				card2.style.padding = "5px 5px 15px 5px";
+				
+				card.appendChild(card2);
+				
+				myNode.appendChild(card);
+		}
+	}		
+}
+
+//BOOKMARK SEARCH
+function searchBms(){
+	var query = document.getElementById("TaxoSearchInput").value.toLowerCase().trim();
+
+	var childrenDrop = document.getElementById("ChildrenDropdown").value;
+	var childrenValue = "False";
+	
+	if(childrenDrop == "1"){
+		childrenValue = "True";
+	}
+	
+	var message = { fun: "newSearch", username: currUsername, password: currPassword, query: escape(query), children: childrenValue };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			addBmSearchResults([]);
+			var myObj = JSON.parse(this.responseText);
+			addBmSearchResults(myObj.result);
+			showLoadingOverlay(false);
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function addBmSearchResults(bms){
+	var myNode = document.getElementById("bmSearchCon");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+
+	var bmsLength = 0;
+
+	if(bms != undefined){
+		bmsLength = bms.length; 
+	}
+	
+	var resNode = document.createElement("h4");
+	var resCount = document.createTextNode("Bookmark search: " + bmsLength + " results");
+	resNode.classList.add("w3-text-light-grey");
+	resNode.appendChild(resCount)
+	myNode.appendChild(resNode);
+	
+	if(bmsLength > 0){
+		for (var i = 0; i < bms.length; i++) { 
+				var card = document.createElement("div");
+				card.style = "margin: 7px";					
+				card.classList.add("w3-card-2");
+				card.classList.add("w3-round");
+				card.classList.add("testhover");
+
+				var header = document.createElement("header");
+				header.classList.add("w3-container");
+				header.classList.add("w3-text-light-grey");
+				header.classList.add("unselectable");
+				card.appendChild(header);
+
+				var h1 = document.createElement("h5");
+				card.style.background ="#202225";
+				h1.style.margin ="7px";
+			
+				var node = document.createTextNode(bms[i][0]);
+				h1.classList.add("w3-text-light-grey");
+				h1.appendChild(node);
+				
+				var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
+				h1.setAttribute("onclick",tmpOnClick);
+
+				header.appendChild(h1);
+				myNode.appendChild(card);
+		}
+	}		
+}
+
+function addBm(){
+	//showLoadingOverlay(true);
+
+	var files = document.getElementById('fileToUpload').files;
+	var fileName = "";
+	var fileData = "";
+	var fileSize = 0;
+
+  	if (files.length > 0) {
+    	var fileToSave = files[0];
+		document.getElementById('fileToUpload').value = null;
+
+		if(fileToSave.size > 50000000){
+			showMessage("File size exceeds 50MB, please select a smaller file");
+			showLoadingOverlay(false);
+    		return;
+		}
+
+		fileName = fileToSave.name;
+		fileSize = fileToSave.size;	
+		
+		var promise = getBase64(fileToSave);
+			promise.then(function(result) {
+				fileData = result;
+
+				if(fileData.startsWith("data:image")){
+					image.onload = function()
+					{
+						var canvas = document.createElement('canvas');
+					var ctx = canvas.getContext('2d');
+					canvas.width = 200;
+					canvas.height = canvas.width * (image.height / image.width);
+					ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+					var data = canvas.toDataURL();
+
+					image.onload = function(){};
+
+					image.src = data;
+					}
+					var image2 = document.getElementById('testImage');
+					image2.src = fileData;
+				}
+
+				// var base64HeadAndBody = fileData.split(";base64,");
+				// var abc = base64HeadAndBody[1].replace(/\+/g,"-");
+				// var cba = base64HeadAndBody[0] + ";base64," + abc;
+
+				// addBmCont(fileName,cba,fileSize);
+		});
+  	}
+	else{
+		addBmCont("","",0);
+	}
+}
+
+function addBmCont(fileName, fileData,fileSize){
+	var newBmName = escape(document.getElementById("newBmName").value);
+	var newBmUrl = escape(document.getElementById("newBmUrl").value);
+
+	if(newBmName == ""){
+		showLoadingOverlay(false);
+		showMessage("Bookmark name cannot be empty");
+		return;
+	}
+
+	var dataToSend = [fileData];
+
+	if(fileSize > 5000000){
+		var chunks = Math.floor((fileSize + 5000000) /5000000)
+		dataToSend = chunkArray(fileData,chunks);
+	}
+	
+	var message = { fun: "addTaxoBm", username: currUsername, password: currPassword, name: newBmName, url: newBmUrl, filename: escape(fileName), filedata: escape(dataToSend[0])};
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			if(this.responseText != ""){
+				var myObj = JSON.parse(this.responseText);
+
+				if(myObj.result == "bookmark_already_exists"){
+					showLoadingOverlay(false);
+					showMessage("Bookmark with this name already exists");
+				}
+				else if(myObj.result == "bookmark_added"){					
+					if(dataToSend.length > 1){
+						showLoadingOverlay(true);
+						sendInChunksbookmark = newBmName;
+						sendInChunksdataToSend = dataToSend;
+						sendInChunksiter = 1;
+						sendRestOfData();
+					}
+					else{
+						showMessage("Bookmark was successfully saved");
+						showLoadingOverlay(false);
+						getBms();
+					}
+				}
+			}
+			else{
+				showLoadingOverlay(false);
+			}
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function sendRestOfData(){
+
+	var bookmark = sendInChunksbookmark;
+	var dataToSend = sendInChunksdataToSend;
+	var iter = sendInChunksiter;
+
+	if(iter == dataToSend.length){
+		var dataToSend = [];
+		showMessage("Bookmark was successfully saved");
+		showLoadingOverlay(false);
+		getBms();
+		return;
+	}
+
+	showLoadingOverlay(true);
+
+	var message = { fun: "addTaxoBmDataChunk", username: currUsername, password: currPassword, name: bookmark, filedata: escape(dataToSend[iter])};
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			if(this.responseText != ""){
+				var myObj = JSON.parse(this.responseText);
+
+				if(myObj.result == "ok"){
+					sendInChunksiter = iter + 1;
+					sendRestOfData();
+				}
+			}
+			else{
+				showMessage("Bookmark file was not saved");
+				showLoadingOverlay(false);
+				getBms();
+			}
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      var encoded = reader.result;
+      resolve(encoded);
+    };
+    reader.onerror = error => reject(error);
+  });
+}
+
+function chunkArray(arr,n){
+     var chunkLength = Math.max(arr.length/n ,1);
+     var chunks = [];
+     for (var i = 0; i < n; i++) {
+         if(chunkLength*(i+1)<=arr.length)chunks.push(arr.slice(chunkLength*i, chunkLength*(i+1)));
+     }
+     return chunks; 
+ }
+
+function getBookmarkFile(bookmark){
+	showLoadingOverlay(true);
+	var message = { fun: "getBookmarkFile", username: currUsername, password: currPassword, bookmark: bookmark};
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myObj = JSON.parse(this.responseText);
+			
+			if(myObj.result[0][0] == ""){
+				showMessage("This bookmark has no file attached")
+			}
+			else{
+				var base64HeadAndBody = myObj.result[0][1].split(";base64,");
+				var abc = base64HeadAndBody[1].replace(/-/g,"+");
+				var cba = base64HeadAndBody[0] + ";base64," + abc;
+
+				//console.log(cba);
+
+				saveAs(cba, myObj.result[0][0]);
+			}
+
+			showLoadingOverlay(false);
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function removeBookmark(bmToDelete){
+	showLoadingOverlay(true);
+	
+	var message = { fun: "removeBookmark", username: currUsername, password: currPassword, name: bmToDelete};
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var myObj = JSON.parse(this.responseText);
+			showLoadingOverlay(false);
+
+			if(myObj.result == "bookmark_removed"){
+				showMessage("Bookmark deleted");
+			}
+			else{
+				showMessage(myObj.result);
+			}
+
+			currentDetails = "";
+			getBms();
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function addTag(){
+	var bmName = document.getElementById("bmName").value;
+
+	if(!(currBookmarks.indexOf(bmName) > -1)){
+		showMessage("This bookmark does not exist");
+		return;
+	}
+
+	showLoadingOverlay(true);
+	
+	var message = { fun: "addTaxoTag", username: currUsername, password: currPassword, name: bmName, taxoId: currTaxoId, taxoName: currTaxoName };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			showLoadingOverlay(false);
+			getBms();
+			updateNavigation(currTaxoId);
+			showMenu(0);
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function addTag2(bmName, taxoId, taxoName){
+	showLoadingOverlay(true);
+	
+	var message = { fun: "addTaxoTag", username: currUsername, password: currPassword, name: bmName, taxoId: taxoId, taxoName: taxoName };
+	var messageJSON = JSON.stringify(message);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			showLoadingOverlay(false);
+			getBms();
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+//CONTEXT
+function addNewContext(){
+	var conName = document.getElementById("newContextInput").value;
+	contexts.push([conName,[],[]]);
+	updateContext(conName);
+}
+
+function updateContext(contextToUpdate)
+{
+	var clength = contexts.length;
+	var context = undefined;
+	for (i = 0; i < clength; i++) {
+		if(contexts[i][0] == contextToUpdate){
+			context = contexts[i];
+		} 
+	}
+
+	if(context == undefined){
+		return;
+	}
+
+	showLoadingOverlay(true);
+
+	var taxoLength = context[1].length;
+	var taxos = "";
+	for (i = 0; i < taxoLength; i++) {
+		if(i == 0){
+			taxos = context[1][i][0];
+		}
+		else{
+			taxos = taxos + "," +  context[1][i][0];
+		} 
+	}
+
+	var enc = window.btoa(JSON.stringify(context[2]));
+
+	var message = { fun: "addContext", username: currUsername, password: currPassword, contextName: context[0], taxoTags: taxos, queries: enc};
+	var messageJSON = JSON.stringify(message);
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			document.getElementById("responseField").innerHTML = this.responseText;
+			var myObj = JSON.parse(this.responseText);
+			
+			if(myObj.result == "success" || true){
+				getContexts(currentContext);
+				showMenu(0);
+			}
+			showLoadingOverlay(false);
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function getContexts(contextToShow){
+	var message = { fun: "getContexts", username: currUsername, password: currPassword };
+	var messageJSON = JSON.stringify(message);
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			document.getElementById("responseField").innerHTML = this.responseText;
+			var myObj = JSON.parse(this.responseText);
+
+			var result = myObj.result;
+
+			var myObjLen = result.length;
+
+			contexts = [];
+			
+			for (i = 0; i < myObjLen; i++) {
+				var contextToAdd = [result[i][0][1], result[i][1][1],JSON.parse(window.atob(result[i][2][1]))];
+				contexts.push(contextToAdd);
+			}
+
+			updateContextDropdown();
+			setUpContext(contextToShow);		
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+
+function setUpContext(contextToShow){
+	currentContext = contextToShow;
+	var myNode = document.getElementById("contextSection");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+	if(contexts.length > 0){
+		var context = contexts[contextToShow];
+		
+		var card = document.createElement("div");
+		card.classList.add("w3-card-2");
+		card.classList.add("w3-round");
+		card.style.background = "#2f3136";
+		card.style.padding = "5px";
+	
+		var tableDiv = document.createElement("div");
+		tableDiv.classList.add("w3-round");
+		tableDiv.style.display = "table";
+		tableDiv.style.width =  "100%";
+		//tableDiv.style.background = "#202225";
+		card.appendChild(tableDiv);
+
+		var leftCol = document.createElement("div");
+		leftCol.style.display =  "table-cell";
+		leftCol.style.width =  "30%";
+		tableDiv.appendChild(leftCol);
+
+		var centerCol = document.createElement("div");
+		centerCol.style.display =  "table-cell";
+		centerCol.style.width =  "40%";
+		tableDiv.appendChild(centerCol);
+
+		var rightCol = document.createElement("div");
+		rightCol.style.display =  "table-cell";
+		rightCol.style.width =  "30%";
+		rightCol.style.textAlign =  "right";
+		tableDiv.appendChild(rightCol);
+
+		var h1 = document.createElement("h4");
+		h1.classList.add("unselectable");
+		h1.classList.add("w3-text-light-grey");
+		h1.classList.add("w3-wide");
+		var node = document.createTextNode(context[0]);
+		h1.appendChild(node);
+		h1.style.margin = "0px";
+		centerCol.appendChild(h1);
+
+		var deleteBtn = document.createElement("button");
+		var tdelete = document.createTextNode("Delete");
+		deleteBtn.appendChild(tdelete);
+		deleteBtn.classList.add("w3-button");
+		deleteBtn.classList.add("w3-round");
+		deleteBtn.classList.add("w3-text-light-grey");
+		deleteBtn.style.background = "#4f545c";
+		var tmpDelete = context[0];
+		tmpDelete = "deleteContext('"+tmpDelete+"')";
+		deleteBtn.setAttribute("onclick",tmpDelete);
+		deleteBtn.style.padding = "4px 7px";
+		deleteBtn.style.marginBottom = "4px";
+		deleteBtn.style.marginRight = "6px";
+		rightCol.appendChild(deleteBtn);
+
+		var h2 = document.createElement("h5");
+		h2.classList.add("unselectable");
+		h2.classList.add("w3-text-light-grey")
+		var node2 = document.createTextNode("Concepts");
+		h2.appendChild(node2);
+		card.appendChild(h2);
+
+		for (var i = 0; i < context[1].length; i++) { 
+			var cardForTag = document.createElement("div");
+			cardForTag.classList.add("w3-card-2");
+			cardForTag.style.margin = "10px";
+			cardForTag.style.padding = "3px";
+			cardForTag.style.background = "#4f545c";
+			cardForTag.classList.add("w3-round");
+			cardForTag.classList.add("testhoverGray");
+			cardForTag.classList.add("parent");
+
+			var hoverArea = document.createElement("div");
+			hoverArea.style.width = "10%";
+			hoverArea.classList.add("tooltip");
+			hoverArea.classList.add("w3-center");
+			hoverArea.classList.add("w3-round");
+			hoverArea.classList.add("testhover");
+			hoverArea.style.background = "#36393f";
+			hoverArea.style.margin = "0px";
+			cardForTag.appendChild(hoverArea);
+
+			var textDiv = document.createElement("header");
+			textDiv.classList.add("w3-text-light-grey");
+			textDiv.style.width = "90%";
+			textDiv.style.padding = "0px 5px";
+			textDiv.style.margin = "0px 0px 5px 0px";
+			cardForTag.appendChild(textDiv);
+
+			var textDiv2 = document.createElement("div");
+			textDiv2.style.width = "10%";
+			cardForTag.appendChild(textDiv2);
+
+			var para2 = document.createElement("div");
+			para2.classList.add("unselectable");
+			para2.classList.add("w3-text-light-grey");
+
+			var tmpTitle = context[1][i][1];
+			var title = tmpTitle.replace(/,/g, ", ");
+			var nodeTmp = document.createTextNode(title);
+
+			var tmp = tmpTitle.split(",");
+			tmp = tmp[0];
+			tmp = "addToSearchField('"+tmp+"','"+context[1][i][0]+"')";
+			cardForTag.setAttribute("onclick",tmp);
+
+			para2.appendChild(nodeTmp);
+			textDiv.appendChild(para2);
+
+			var tooltiptextDiv = document.createElement("div");
+			tooltiptextDiv.classList.add("tooltiptext");
+			hoverArea.appendChild(tooltiptextDiv);
+
+			var butPara = document.createElement("div");
+
+			var btn2 = document.createElement("button");
+			var t2 = document.createTextNode("Open");
+			btn2.appendChild(t2);
+			btn2.classList.add("w3-button");
+			btn2.classList.add("w3-round");
+			btn2.classList.add("w3-text-light-grey");
+			btn2.style.margin = "5px";
+			btn2.style.background = "#43b582";
+			var tmp2 = context[1][i][0];
+			tmp2 = "updateNavigation('"+tmp2+"')";
+			btn2.setAttribute("onclick",tmp2);
+			butPara.appendChild(btn2);
+
+			var btn3 = document.createElement("button");
+			var t3 = document.createTextNode("Remove");
+			btn3.appendChild(t3);
+			btn3.classList.add("w3-button");
+			btn3.classList.add("w3-round");
+			btn3.classList.add("w3-text-light-grey");
+			btn3.style.margin = "5px";
+			btn3.style.background = "#4f545c";
+			var tmp3 = "removeConceptFromContext('"+context[1][i][0]+"')";
+			btn3.setAttribute("onclick",tmp3);
+			butPara.appendChild(btn3);
+
+			tooltiptextDiv.appendChild(butPara);
+
+			card.appendChild(cardForTag);
+		}
+
+		var h4 = document.createElement("h5");
+		h4.classList.add("unselectable");
+		h4.classList.add("w3-text-light-grey");
+		var node3 = document.createTextNode("Queries");
+		h4.appendChild(node3);
+		card.appendChild(h4);
+
+		for (var i = 0; i < context[2].length; i++) { 
+			var cardForQuery = document.createElement("div");
+			cardForQuery.classList.add("w3-card-2");
+			cardForQuery.style = "margin: 10px";
+			cardForQuery.style.background = "#36393f";
+			cardForQuery.classList.add("w3-round");
+			cardForQuery.classList.add("parent");
+			cardForQuery.classList.add("testhoverGray");
+
+			var tmp = "";
+			tmp = context[2][i][1];
+			tmp = "updateSearchFromContextQuery('"+tmp+"')";
+			cardForQuery.setAttribute("onclick",tmp);
+
+			var hoverArea = document.createElement("div");
+			hoverArea.style.width = "10%";
+			hoverArea.classList.add("tooltip");
+			hoverArea.classList.add("w3-center");
+			hoverArea.classList.add("w3-round");
+			hoverArea.classList.add("testhover");
+			hoverArea.style.background = "#4f545c";
+			hoverArea.style.margin = "5px";
+			cardForQuery.appendChild(hoverArea);
+
+			var textDiv = document.createElement("header");
+			textDiv.classList.add("w3-text-light-grey");
+			textDiv.style.width = "90%";
+			textDiv.style.padding = "0px";
+			textDiv.style.margin = "0px 0px 5px 0px";
+			cardForQuery.appendChild(textDiv);
+
+			var textDiv2 = document.createElement("div");
+			textDiv2.style.width = "10%";
+			cardForQuery.appendChild(textDiv2);
+
+			var para2 = document.createElement("h4");
+			para2.classList.add("unselectable");
+			var title = context[2][i][0];
+			var nodeTmp1 = document.createTextNode(title);
+			para2.classList.add("w3-text-light-grey");
+			para2.appendChild(nodeTmp1);
+			para2.style.margin = "0px";
+			textDiv.appendChild(para2);
+
+			var para3 = document.createElement("div");
+			para3.classList.add("unselectable");
+			para3.classList.add("w3-text-light-grey");
+			var querytext = context[2][i][1];
+			var nodeTmp2 = document.createTextNode(querytext);
+			para3.appendChild(nodeTmp2);
+			textDiv.appendChild(para3);
+
+			var tooltiptextDiv = document.createElement("div");
+			tooltiptextDiv.classList.add("tooltiptext");
+			hoverArea.appendChild(tooltiptextDiv);
+
+			var butPara = document.createElement("div");
+
+			var btn2 = document.createElement("button");
+			var t2 = document.createTextNode("Update");
+			btn2.appendChild(t2);
+			btn2.classList.add("w3-button");
+			btn2.classList.add("w3-round");
+			btn2.classList.add("w3-text-light-grey");
+			btn2.style.margin = "5px";
+			btn2.style.background = "#43b582";
+			var tmp2 = "updateQueryInContext('"+context[2][i][0]+"')";
+			btn2.setAttribute("onclick",tmp2);
+			butPara.appendChild(btn2);
+
+			var btn3 = document.createElement("button");
+			var t3 = document.createTextNode("Delete");
+			btn3.appendChild(t3);
+			btn3.classList.add("w3-button");
+			btn3.classList.add("w3-round");
+			btn3.classList.add("w3-text-light-grey");
+			btn3.style.margin = "5px";
+			btn3.style.background = "#4f545c";
+			var tmp3 = "deleteQueryFromContext('"+context[2][i][0]+"')";
+			btn3.setAttribute("onclick",tmp3);
+			butPara.appendChild(btn3);
+
+			tooltiptextDiv.appendChild(butPara);
+
+			card.appendChild(cardForQuery);
+		}
+
+		myNode.appendChild(card);
+	}
+}
+
+function updateSearchFromContextQuery(query){
+	document.getElementById("TaxoSearchInput").value = query;
+}
+
+function addToSearchField(text,id){
+	var searchField = document.getElementById("TaxoSearchInput").value;
+
+	if(searchField == ""){
+		document.getElementById("TaxoSearchInput").value = "["+text+","+id+"]";
+	}
+	else{
+		document.getElementById("TaxoSearchInput").value += " " + "["+text+","+id+"]";
+	}
+}
+
+function updateContextDropdown(){
+	var dropdown = document.getElementById("contextDropdown");
+
+	while (dropdown.firstChild) {
+		dropdown.removeChild(dropdown.firstChild);
+	}
+
+
+	for(var i = 0; i < contexts.length; i++)
+	{
+		var opt = document.createElement("option");
+		opt.value= i;
+		opt.innerHTML = contexts[i][0]; // whatever property it has
+
+		// then append it to the select element
+		dropdown.appendChild(opt);
+	}
+}
+
+function selectContext(){
+	setUpContext(document.getElementById("contextDropdown").value);
+}
+
+function addTaxoTagToContext(taxoId,taxoName){
+	if(contexts.length == 0){
+		return;
+	}
+	contexts[currentContext][1].push([taxoId, taxoName]);
+	updateContext(contexts[currentContext][0]);
+	event.stopPropagation();
+}
+
+function saveQueryToContext(){
+	if(contexts.length == 0){
+		return;
+	}
+
+	var queryName = document.getElementById("newQueryNameInput").value;
+	var query = document.getElementById("TaxoSearchInput").value;
+
+	// queryName = queryName.replace(","," ");
+	// query = query.replace(",","");
+
+	contexts[currentContext][2].push([queryName, query]);
+	updateContext(contexts[currentContext][0]);
+}
+
+function updateQueryInContext(queryName){
+	event.stopPropagation();
+	
+	if(contexts.length == 0){
+		return;
+	}
+
+	var query = document.getElementById("TaxoSearchInput").value;
+
+	for(var i = 0; i < contexts[currentContext][2].length; i++ ){
+		if(contexts[currentContext][2][i][0] == queryName){
+			contexts[currentContext][2][i] = [queryName, query];
+			updateContext(contexts[currentContext][0]);
+			break;
+		}
+	}
+}
+
+function deleteQueryFromContext(queryName){
+	event.stopPropagation();
+	
+	if(contexts.length == 0){
+		return;
+	}
+
+	var newListOfQueries = [];
+	for(var i = 0; i < contexts[currentContext][2].length; i++ ){
+		if(contexts[currentContext][2][i][0] != queryName){
+			newListOfQueries.push(contexts[currentContext][2][i]);
+		}
+	}
+
+	contexts[currentContext][2] = newListOfQueries;
+	updateContext(contexts[currentContext][0]);
+}
+
+function removeConceptFromContext(concept){
+	event.stopPropagation();
+	
+	if(contexts.length == 0){
+		return;
+	}
+
+	var newListOfConcepts = [];
+	for(var i = 0; i < contexts[currentContext][1].length; i++ ){
+		if(contexts[currentContext][1][i][0] != concept){
+			newListOfConcepts.push(contexts[currentContext][1][i]);
+		}
+	}
+
+	contexts[currentContext][1] = newListOfConcepts;
+	updateContext(contexts[currentContext][0]);
+}
+
+function deleteContext(contextToUpdate)
+{
+	var clength = contexts.length;
+	var context = undefined;
+	for (i = 0; i < clength; i++) {
+		if(contexts[i][0] == contextToUpdate){
+			context = contexts[i];
+		} 
+	}
+
+	if(context == undefined){
+		return;
+	}
+
+	showLoadingOverlay(true);
+
+	var message = { fun: "removeContext", username: currUsername, password: currPassword, contextName: context[0]};
+	var messageJSON = JSON.stringify(message);
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			document.getElementById("responseField").innerHTML = this.responseText;
+			var myObj = JSON.parse(this.responseText);
+			
+			if(myObj.result == "success" || true){
+				getContexts(currentContext);
+			}
+			showLoadingOverlay(false);
+		}
+	};
+	xhttp.open("POST", serverAddress, true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("dataToForward="+messageJSON);  
+}
+//AUTOCOMPLETE
+function autocomplete(inp, arr, enterKeyCallback) {
+  var currentFocus;
+  var SuggestionCon;
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      a = document.createElement("DIV");
+	  SuggestionCon = this.parentNode;
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      this.parentNode.appendChild(a);
+	  if(val.length > 2)
+	  {
+		  for (i = 0; i < arr.length; i++) {
+			if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+			  b = document.createElement("DIV");
+			  b.style.background = "#202225";
+			  b.style.color = "#7289da";
+			  b.style.borderColor = "#4f545c";
+			  b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+			  b.innerHTML += arr[i].substr(val.length);
+			  b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+			  b.addEventListener("click", function(e) {
+				  inp.value = this.getElementsByTagName("input")[0].value;
+				  closeAllLists();
+			  });
+			  a.appendChild(b);
+			  if(a.childElementCount >= 10)
+			  {
+				break;
+			  }
+			}
+		  }
+	  }
+  });
+
+  inp.addEventListener("keydown", function(e) {
+	  if(document.getElementById("overlayDiv").hidden == true){
+		var x = document.getElementById(this.id + "autocomplete-list");
+		if (x) x = x.getElementsByTagName("div");
+		if (e.keyCode == 40) {
+			currentFocus++;
+			addActive(x);
+		} else if (e.keyCode == 38) { 
+			currentFocus--;
+			addActive(x);
+		} else if (e.keyCode == 13) {
+			e.preventDefault();
+			if(currentFocus > -1 && SuggestionCon.childElementCount == 1 ){
+				enterKeyCallback();
+				closeAllLists();
+			}
+			else if (currentFocus > -1) {
+			if (x) x[currentFocus].click();
+			}
+			else if(currentFocus == -1){
+				enterKeyCallback();
+				closeAllLists();
+			}
+      	}
+	  }
+	  else{
+		e.preventDefault();
+	  }
+
+
+  });
+  function addActive(x) {
+    if (!x) return false;
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+      });
+}
+
+</script>
+</body>
+</html>
