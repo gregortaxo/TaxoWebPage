@@ -462,8 +462,7 @@ ul, #myUL {
 							<div class="outer">
 									<h4 class="w3-wide unselectable w3-center w3-round w3-text-light-grey">Bookmark Details</h4>
 									<div id="bmDetCon"> </div>
-									<img id= "testImage" width="200" class="w3-center"></img>
-									<img id= "testImage2" width="200" class="w3-center" hidden></img>
+									<img id= "testImage" width="200" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
 									<div class="w3-card-2 inner w3-round" style="margin: 10px; background: #2f3136;">
 										<h4 class="w3-wide unselectable w3-text-light-grey">Add Concepts To Bookmark</h4>
 										<div class="parent" style="width:100%; margin-top: 10px; padding: 10px">
@@ -523,6 +522,7 @@ var taxoIndex = [];
 var currentDetails = "";
 
 var taxoCache = {};
+var imagePreviewCache = {};
 
 var contexts = [];
 var currentContext = 0;
@@ -695,16 +695,20 @@ function RegisterUser(){
 //NAVIGATION
 
 function loadNavigation(){
-	 updateNavigation("00001740");
+	 updateNavigation(event,"00001740");
 }
 
-function updateNavigation(taxoWord){
-	event.stopPropagation();
+function updateNavigation(ev,taxoWord){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
+
 	showLoadingOverlay(true);
 
 	if(taxoCache[taxoWord] != undefined)
 	{
 		addNavResults(taxoCache[taxoWord]);
+		return;
 	}	
 
 	var message = { fun: "searchTaxo", username: currUsername, password: currPassword, word: taxoWord };
@@ -742,8 +746,8 @@ function addNavResults(results){
 		var connectedThings;
 		
 		if(j == 0){
-			myNode = document.getElementById("taxoNavConWord");
-			connectedThings = document.getElementById("ConnectedThings");
+			myNode = document.getElementById("taxoNavConWord"); 
+			connectedThings = document.getElementById("ConnectedThings"); 	
 		}
 		else if(j == 1){
 			myNode = document.getElementById("taxoNavConParents");
@@ -786,7 +790,7 @@ function addNavResults(results){
 					card.classList.add("testhover");
 					var tmp = "";
 					tmp = tmpResult[0];
-					tmp = "updateNavigation('"+tmp+"')";
+					tmp = "updateNavigation(event,'"+tmp+"')";
 					card.setAttribute("onclick",tmp);
 				}
 
@@ -1083,7 +1087,7 @@ function showBmDetails(bookmark, showDetails){
 		
 			var tmp = "";
 			tmp = bm[2][j][1];
-			tmp = "updateNavigation('"+tmp+"')";
+			tmp = "updateNavigation(event,'"+tmp+"')";
 			para2.setAttribute("onclick",tmp);
 
 			para2.appendChild(node2);
@@ -1098,6 +1102,62 @@ function showBmDetails(bookmark, showDetails){
 
 	if(showDetails){
 		switchView(3);
+	}
+
+	var image = document.getElementById('testImage');
+	image.removeAttribute('src');
+	
+	showImagePreview(bm[0]);
+}
+
+function showImagePreview(bookmark){
+	if(imagePreviewCache[bookmark] != undefined)
+	{
+		if(imagePreviewCache[bookmark] == "")
+		{
+			var image = document.getElementById('testImage');
+			image.removeAttribute('src');
+			return;
+		}
+		
+		var image = document.getElementById('testImage');
+		image.src = imagePreviewCache[bookmark];
+	}
+	else
+	{
+		var message = { fun: "getImagePreview", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
+		var messageJSON = JSON.stringify(message);
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				if(this.responseText != ""){
+					var myObj = JSON.parse(this.responseText);
+
+					if(myObj.result == "" || myObj.result == "undefined")
+					{
+						imagePreviewCache[bookmark] = "";
+					}
+					else
+					{
+						var base64HeadAndBody = myObj.result.split(";base64,");
+						var abc = base64HeadAndBody[1].replace(/-/g,"+");
+						var cba = base64HeadAndBody[0] + ";base64," + abc;
+
+						imagePreviewCache[bookmark] = cba;
+
+						if(currentDetails == bookmark)
+						{
+							var image = document.getElementById('testImage');
+							image.src = imagePreviewCache[bookmark];
+						}
+					}
+				}
+			}
+		};
+		xhttp.open("POST", serverAddress, true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("dataToForward="+messageJSON); 
 	}
 }
 
@@ -1339,7 +1399,7 @@ function addSearchResults(results){
 				btn1.style.background ="#4f545c";
 				var tmp3 = "";
 				tmp3 = results[i][0];
-				tmp3 = "updateNavigation('"+tmp3+"')";
+				tmp3 = "updateNavigation(event,'"+tmp3+"')";
 				btn1.setAttribute("onclick",tmp3);
 				butPara.appendChild(btn1);
 
@@ -1352,7 +1412,7 @@ function addSearchResults(results){
 				btn2.style.margin = "0px 0px 0px 5px";
 				btn2.style.background ="#43b582";
 				var tmp2 = results[i][1];
-				tmp2 = "addTaxoTagToContext('"+results[i][0]+"','"+tmp2+"')";
+				tmp2 = "addTaxoTagToContext(event,'"+results[i][0]+"','"+tmp2+"')";
 				btn2.setAttribute("onclick",tmp2);
 				butPara.appendChild(btn2);
 
@@ -1495,7 +1555,7 @@ function addBmSearchResults(bms){
 }
 
 function addBm(){
-	//showLoadingOverlay(true);
+	showLoadingOverlay(true);
 
 	var files = document.getElementById('fileToUpload').files;
 	var fileName = "";
@@ -1519,38 +1579,47 @@ function addBm(){
 			promise.then(function(result) {
 				fileData = result;
 
-				if(fileData.startsWith("data:image")){
+				var base64HeadAndBody = fileData.split(";base64,");
+				var abc = base64HeadAndBody[1].replace(/\+/g,"-");
+				var cba = base64HeadAndBody[0] + ";base64," + abc;
+				
+				if(fileData.startsWith("data:image"))
+				{	
+					var image = new Image();
 					image.onload = function()
 					{
 						var canvas = document.createElement('canvas');
-					var ctx = canvas.getContext('2d');
-					canvas.width = 200;
-					canvas.height = canvas.width * (image.height / image.width);
-					ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+						var ctx = canvas.getContext('2d');
+						canvas.width = 200;
+						canvas.height = canvas.width * (image.height / image.width);
+						ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-					var data = canvas.toDataURL();
+						var data = canvas.toDataURL();
 
-					image.onload = function(){};
+						imagePreviewCache[document.getElementById("newBmName").value] = data;
 
-					image.src = data;
+						image.onload = function(){};
+
+						var previewbase64HeadAndBody = data.split(";base64,");
+						var previewAbc = previewbase64HeadAndBody[1].replace(/\+/g,"-");
+						var previewCba = previewbase64HeadAndBody[0] + ";base64," + previewAbc;
+
+						addBmCont(fileName,cba,fileSize,previewCba);
 					}
-					var image2 = document.getElementById('testImage');
-					image2.src = fileData;
+
+					image.src = fileData;
 				}
-
-				// var base64HeadAndBody = fileData.split(";base64,");
-				// var abc = base64HeadAndBody[1].replace(/\+/g,"-");
-				// var cba = base64HeadAndBody[0] + ";base64," + abc;
-
-				// addBmCont(fileName,cba,fileSize);
+				else{
+					addBmCont(fileName,cba,fileSize,"");
+				}
 		});
   	}
 	else{
-		addBmCont("","",0);
+		addBmCont("","",0,"");
 	}
 }
 
-function addBmCont(fileName, fileData,fileSize){
+function addBmCont(fileName, fileData,fileSize,imagePreview){
 	var newBmName = escape(document.getElementById("newBmName").value);
 	var newBmUrl = escape(document.getElementById("newBmUrl").value);
 
@@ -1567,7 +1636,8 @@ function addBmCont(fileName, fileData,fileSize){
 		dataToSend = chunkArray(fileData,chunks);
 	}
 	
-	var message = { fun: "addTaxoBm", username: currUsername, password: currPassword, name: newBmName, url: newBmUrl, filename: escape(fileName), filedata: escape(dataToSend[0])};
+	var message = { fun: "addTaxoBm", username: currUsername, password: currPassword, name: newBmName, url: newBmUrl,
+					 filename: escape(fileName), filedata: escape(dataToSend[0]), filepreview: escape(imagePreview)};
 	var messageJSON = JSON.stringify(message);
 
 	var xhttp = new XMLHttpRequest();
@@ -1745,7 +1815,7 @@ function addTag(){
 		if (this.readyState == 4 && this.status == 200) {
 			showLoadingOverlay(false);
 			getBms();
-			updateNavigation(currTaxoId);
+			updateNavigation(event,currTaxoId);
 			showMenu(0);
 		}
 	};
@@ -1990,7 +2060,7 @@ function setUpContext(contextToShow){
 			btn2.style.margin = "5px";
 			btn2.style.background = "#43b582";
 			var tmp2 = context[1][i][0];
-			tmp2 = "updateNavigation('"+tmp2+"')";
+			tmp2 = "updateNavigation(event,'"+tmp2+"')";
 			btn2.setAttribute("onclick",tmp2);
 			butPara.appendChild(btn2);
 
@@ -2002,7 +2072,7 @@ function setUpContext(contextToShow){
 			btn3.classList.add("w3-text-light-grey");
 			btn3.style.margin = "5px";
 			btn3.style.background = "#4f545c";
-			var tmp3 = "removeConceptFromContext('"+context[1][i][0]+"')";
+			var tmp3 = "removeConceptFromContext(event,'"+context[1][i][0]+"')";
 			btn3.setAttribute("onclick",tmp3);
 			butPara.appendChild(btn3);
 
@@ -2084,7 +2154,7 @@ function setUpContext(contextToShow){
 			btn2.classList.add("w3-text-light-grey");
 			btn2.style.margin = "5px";
 			btn2.style.background = "#43b582";
-			var tmp2 = "updateQueryInContext('"+context[2][i][0]+"')";
+			var tmp2 = "updateQueryInContext(event,'"+context[2][i][0]+"')";
 			btn2.setAttribute("onclick",tmp2);
 			butPara.appendChild(btn2);
 
@@ -2096,7 +2166,7 @@ function setUpContext(contextToShow){
 			btn3.classList.add("w3-text-light-grey");
 			btn3.style.margin = "5px";
 			btn3.style.background = "#4f545c";
-			var tmp3 = "deleteQueryFromContext('"+context[2][i][0]+"')";
+			var tmp3 = "deleteQueryFromContext(event,'"+context[2][i][0]+"')";
 			btn3.setAttribute("onclick",tmp3);
 			butPara.appendChild(btn3);
 
@@ -2147,13 +2217,16 @@ function selectContext(){
 	setUpContext(document.getElementById("contextDropdown").value);
 }
 
-function addTaxoTagToContext(taxoId,taxoName){
+function addTaxoTagToContext(ev,taxoId,taxoName){
 	if(contexts.length == 0){
 		return;
 	}
 	contexts[currentContext][1].push([taxoId, taxoName]);
 	updateContext(contexts[currentContext][0]);
-	event.stopPropagation();
+
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
 }
 
 function saveQueryToContext(){
@@ -2171,8 +2244,10 @@ function saveQueryToContext(){
 	updateContext(contexts[currentContext][0]);
 }
 
-function updateQueryInContext(queryName){
-	event.stopPropagation();
+function updateQueryInContext(ev, queryName){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
 	
 	if(contexts.length == 0){
 		return;
@@ -2189,8 +2264,10 @@ function updateQueryInContext(queryName){
 	}
 }
 
-function deleteQueryFromContext(queryName){
-	event.stopPropagation();
+function deleteQueryFromContext(ev,queryName){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
 	
 	if(contexts.length == 0){
 		return;
@@ -2207,8 +2284,10 @@ function deleteQueryFromContext(queryName){
 	updateContext(contexts[currentContext][0]);
 }
 
-function removeConceptFromContext(concept){
-	event.stopPropagation();
+function removeConceptFromContext(ev, concept){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
 	
 	if(contexts.length == 0){
 		return;
