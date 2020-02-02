@@ -1631,8 +1631,10 @@ function addBmCont(fileName, fileData,fileSize,imagePreview){
 
 	var dataToSend = [fileData];
 
-	if(fileSize > 5000000){
-		var chunks = Math.floor((fileSize + 5000000) /5000000)
+	var chunksize = 5000000;
+
+	if(fileSize > chunksize){
+		var chunks = Math.floor((fileSize + chunksize) /chunksize)
 		dataToSend = chunkArray(fileData,chunks);
 	}
 	
