@@ -673,37 +673,30 @@ function logIn(){
 	currPassword = document.getElementById("PassInput").value;
 	
 	var message = { fun: "login", username: currUsername, password: currPassword };
-	var messageJSON = JSON.stringify(message);
-	
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			document.getElementById("responseField").innerHTML = myObj.result;
-			if(myObj.result == "success"){
-				loggedIn();
-			}
+
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+
+		var myObj = JSON.parse(result);
+		document.getElementById("responseField").innerHTML = myObj.result;
+		
+		if(myObj.result == "success"){
+			loggedIn();
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+	});
 }
 
 function RegisterUser(){
 	var message = { fun: "regUser", username: document.getElementById("UsernameInput").value, password: document.getElementById("PassInput").value };
-	var messageJSON = JSON.stringify(message);
 	
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			document.getElementById("responseField").innerHTML = myObj.result;
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+
+		var myObj = JSON.parse(result);
+		document.getElementById("responseField").innerHTML = myObj.result;
+	});
 }
 
 //NAVIGATION
@@ -727,31 +720,21 @@ function updateNavigation(ev,taxoWord){
 	}	
 
 	var message = { fun: "searchTaxo", username: currUsername, password: currPassword, word: taxoWord };
-	var messageJSON = JSON.stringify(message);
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			if(this.responseText != ""){
-				var myObj = JSON.parse(this.responseText);
-				addNavResults(myObj.result);
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-				taxoCache[taxoWord] = myObj.result;
+		var myObj = JSON.parse(result);
+		addNavResults(myObj.result);
 
-				if(firstLoadDoNotShowTaxoNav == false){
-					switchView(1);
-				}
-				firstLoadDoNotShowTaxoNav = false;
-			}
-			else{
-				showMessage("An error occured");
-				showLoadingOverlay(false);
-			}
+		taxoCache[taxoWord] = myObj.result;
+
+		if(firstLoadDoNotShowTaxoNav == false){
+			switchView(1);
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		firstLoadDoNotShowTaxoNav = false;
+	});
 }
 
 function addNavResults(results){
@@ -898,41 +881,37 @@ function addNavResults(results){
 
 function getBms(){
 	var message = { fun: "getUserBookmarks", username: currUsername, password: currPassword };
-	var messageJSON = JSON.stringify(message);
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			bmsDict = {};
-			userBookmarks = myObj.result;
-			
-			for(var i = 0; i< userBookmarks.length; i++){
-				for(var j = 0; j< userBookmarks[i][2].length; j++){
-					if(bmsDict[userBookmarks[i][2][j][1]] == undefined){
-						bmsDict[userBookmarks[i][2][j][1]] = [userBookmarks[i][0]];
-					}
-					else{
-						bmsDict[userBookmarks[i][2][j][1]].push(userBookmarks[i][0]);
-					}		
-				}	
-			}
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
-			if(currentDetails == "" && userBookmarks.length > 0){
-				showBmDetails(userBookmarks[0][0],false);
-			}
-			else{
-				showBmDetails(currentDetails,false);
-			}
-
-			addCurrBms(myObj.result);
-			addUserBms(myObj.result);
-			return 1;
+		var myObj = JSON.parse(result);
+		bmsDict = {};
+		userBookmarks = myObj.result;
+		
+		for(var i = 0; i< userBookmarks.length; i++){
+			for(var j = 0; j< userBookmarks[i][2].length; j++){
+				if(bmsDict[userBookmarks[i][2][j][1]] == undefined){
+					bmsDict[userBookmarks[i][2][j][1]] = [userBookmarks[i][0]];
+				}
+				else{
+					bmsDict[userBookmarks[i][2][j][1]].push(userBookmarks[i][0]);
+				}		
+			}	
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+
+		if(currentDetails == "" && userBookmarks.length > 0){
+			showBmDetails(userBookmarks[0][0],false);
+		}
+		else{
+			showBmDetails(currentDetails,false);
+		}
+
+		addCurrBms(myObj.result);
+		addUserBms(myObj.result);
+		return 1;
+	});
 }
 
 function addUserBms(bms){
@@ -1141,38 +1120,32 @@ function showImagePreview(bookmark){
 	else
 	{
 		var message = { fun: "getImagePreview", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
-		var messageJSON = JSON.stringify(message);
 
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				if(this.responseText != ""){
-					var myObj = JSON.parse(this.responseText);
+		makeAjaxCall(JSON.stringify(message)).then(function(result) 
+		{
+			if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
-					if(myObj.result == "" || myObj.result == "undefined")
-					{
-						imagePreviewCache[bookmark] = "";
-					}
-					else
-					{
-						var base64HeadAndBody = myObj.result.split(";base64,");
-						var abc = base64HeadAndBody[1].replace(/-/g,"+");
-						var cba = base64HeadAndBody[0] + ";base64," + abc;
+			var myObj = JSON.parse(result);
 
-						imagePreviewCache[bookmark] = cba;
+			if(myObj.result == "" || myObj.result == "undefined")
+			{
+				imagePreviewCache[bookmark] = "";
+			}
+			else
+			{
+				var base64HeadAndBody = myObj.result.split(";base64,");
+				var abc = base64HeadAndBody[1].replace(/-/g,"+");
+				var cba = base64HeadAndBody[0] + ";base64," + abc;
 
-						if(currentDetails == bookmark)
-						{
-							var image = document.getElementById('testImage');
-							image.src = imagePreviewCache[bookmark];
-						}
-					}
+				imagePreviewCache[bookmark] = cba;
+
+				if(currentDetails == bookmark)
+				{
+					var image = document.getElementById('testImage');
+					image.src = imagePreviewCache[bookmark];
 				}
 			}
-		};
-		xhttp.open("POST", serverAddress, true);
-		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xhttp.send("dataToForward="+messageJSON); 
+		});
 	}
 }
 
@@ -1182,27 +1155,16 @@ function showTreeView(){
 	showLoadingOverlay(true);
 
 	var message = { fun: "getBookmarkTree", username: currUsername, password: currPassword};
-	var messageJSON = JSON.stringify(message);
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			if(this.responseText != ""){
-				var myObj = JSON.parse(this.responseText);
-				
-				showLoadingOverlay(false);
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-				populateTreeView(myObj.result);
-			}
-			else{
-				showMessage("An error occured");
-				showLoadingOverlay(false);
-			}
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		var myObj = JSON.parse(result);
+		
+		showLoadingOverlay(false);
+		populateTreeView(myObj.result);
+	});
 }
 
 function populateTreeView(results){
@@ -1300,21 +1262,16 @@ function searchTaxo(){
 	var currSearchWord = document.getElementById("ConceptSearchInput").value.toLowerCase().trim();
 	
 	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
-	var messageJSON = JSON.stringify(message);
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			if(this.responseText != ""){
-				var myObj = JSON.parse(this.responseText);
-				addSearchResults(myObj.result);
-			}
-			showLoadingOverlay(false);
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+		
+		showLoadingOverlay(false);
+		addSearchResults(myObj.result);
+	});
 }
 
 function searchTaxo2(){
@@ -1322,19 +1279,16 @@ function searchTaxo2(){
 	var currSearchWord = document.getElementById("TaxoSearchInput2").value.toLowerCase().trim();
 
 	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			addSearchResults2(myObj.result);
-			showLoadingOverlay(false);
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		var myObj = JSON.parse(result);
+		
+		addSearchResults2(myObj.result);
+		showLoadingOverlay(false);
+	});
 }
 
 function addSearchResults(results){
@@ -1505,20 +1459,17 @@ function searchBms(){
 	}
 	
 	var message = { fun: "newSearch", username: currUsername, password: currPassword, query: escape(query), children: childrenValue };
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			addBmSearchResults([]);
-			var myObj = JSON.parse(this.responseText);
-			addBmSearchResults(myObj.result);
-			showLoadingOverlay(false);
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		var myObj = JSON.parse(result);
+		
+		addBmSearchResults([]);
+		addBmSearchResults(myObj.result);
+		showLoadingOverlay(false);
+	});
 }
 
 function addBmSearchResults(bms){
@@ -1657,41 +1608,32 @@ function addBmCont(fileName, fileData,fileSize,imagePreview){
 	
 	var message = { fun: "addTaxoBm", username: currUsername, password: currPassword, name: newBmName, url: newBmUrl,
 					 filename: escape(fileName), filedata: escape(dataToSend[0]), filepreview: escape(imagePreview)};
-	var messageJSON = JSON.stringify(message);
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			if(this.responseText != ""){
-				var myObj = JSON.parse(this.responseText);
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-				if(myObj.result == "bookmark_already_exists"){
-					showLoadingOverlay(false);
-					showMessage("Bookmark with this name already exists");
-				}
-				else if(myObj.result == "bookmark_added"){					
-					if(dataToSend.length > 1){
-						showLoadingOverlay(true);
-						sendInChunksbookmark = newBmName;
-						sendInChunksdataToSend = dataToSend;
-						sendInChunksiter = 1;
-						sendRestOfData();
-					}
-					else{
-						showMessage("Bookmark was successfully saved");
-						showLoadingOverlay(false);
-						getBms();
-					}
-				}
+		var myObj = JSON.parse(result);
+
+		if(myObj.result == "bookmark_already_exists"){
+			showLoadingOverlay(false);
+			showMessage("Bookmark with this name already exists");
+		}
+		else if(myObj.result == "bookmark_added"){					
+			if(dataToSend.length > 1){
+				showLoadingOverlay(true);
+				sendInChunksbookmark = newBmName;
+				sendInChunksdataToSend = dataToSend;
+				sendInChunksiter = 1;
+				sendRestOfData();
 			}
 			else{
+				showMessage("Bookmark was successfully saved");
 				showLoadingOverlay(false);
+				getBms();
 			}
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+	});
 }
 
 function sendRestOfData(){
@@ -1711,29 +1653,18 @@ function sendRestOfData(){
 	showLoadingOverlay(true);
 
 	var message = { fun: "addTaxoBmDataChunk", username: currUsername, password: currPassword, name: bookmark, filedata: escape(dataToSend[iter])};
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Bookmark file was not saved. Please try again"); getBms(); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			if(this.responseText != ""){
-				var myObj = JSON.parse(this.responseText);
+		var myObj = JSON.parse(result);
 
-				if(myObj.result == "ok"){
-					sendInChunksiter = iter + 1;
-					sendRestOfData();
-				}
-			}
-			else{
-				showMessage("Bookmark file was not saved");
-				showLoadingOverlay(false);
-				getBms();
-			}
+		if(myObj.result == "ok"){
+			sendInChunksiter = iter + 1;
+			sendRestOfData();
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+	});
 }
 
 function getBase64(file) {
@@ -1760,60 +1691,51 @@ function chunkArray(arr,n){
 function getBookmarkFile(bookmark){
 	showLoadingOverlay(true);
 	var message = { fun: "getBookmarkFile", username: currUsername, password: currPassword, bookmark: bookmark};
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			
-			if(myObj.result[0][0] == ""){
-				showMessage("This bookmark has no file attached")
-			}
-			else{
-				var base64HeadAndBody = myObj.result[0][1].split(";base64,");
-				var abc = base64HeadAndBody[1].replace(/-/g,"+");
-				var cba = base64HeadAndBody[0] + ";base64," + abc;
+		var myObj = JSON.parse(result);
 
-				//console.log(cba);
-
-				saveAs(cba, myObj.result[0][0]);
-			}
-
-			showLoadingOverlay(false);
+		if(myObj.result[0][0] == ""){
+			showMessage("This bookmark has no file attached")
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		else{
+			var base64HeadAndBody = myObj.result[0][1].split(";base64,");
+			var abc = base64HeadAndBody[1].replace(/-/g,"+");
+			var cba = base64HeadAndBody[0] + ";base64," + abc;
+
+			saveAs(cba, myObj.result[0][0]);
+		}
+
+		showLoadingOverlay(false);
+	});
 }
 
 function removeBookmark(bmToDelete){
 	showLoadingOverlay(true);
 	
 	var message = { fun: "removeBookmark", username: currUsername, password: currPassword, name: bmToDelete};
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var myObj = JSON.parse(this.responseText);
-			showLoadingOverlay(false);
+		var myObj = JSON.parse(result);
 
-			if(myObj.result == "bookmark_removed"){
-				showMessage("Bookmark deleted");
-			}
-			else{
-				showMessage(myObj.result);
-			}
+		showLoadingOverlay(false);
 
-			currentDetails = "";
-			getBms();
+		if(myObj.result == "bookmark_removed"){
+			showMessage("Bookmark deleted");
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		else{
+			showMessage(myObj.result);
+		}
+
+		currentDetails = "";
+		getBms();
+	});
 }
 
 function addTag(){
@@ -1827,38 +1749,32 @@ function addTag(){
 	showLoadingOverlay(true);
 	
 	var message = { fun: "addTaxoTag", username: currUsername, password: currPassword, name: bmName, taxoId: currTaxoId, taxoName: currTaxoName };
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			showLoadingOverlay(false);
-			getBms();
-			updateNavigation(event,currTaxoId);
-			showMenu(0);
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		var myObj = JSON.parse(result);
+
+		showLoadingOverlay(false);
+		getBms();
+		updateNavigation(event,currTaxoId);
+		showMenu(0);
+	}); 
 }
 
 function addTag2(bmName, taxoId, taxoName){
 	showLoadingOverlay(true);
 	
 	var message = { fun: "addTaxoTag", username: currUsername, password: currPassword, name: bmName, taxoId: taxoId, taxoName: taxoName };
-	var messageJSON = JSON.stringify(message);
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			showLoadingOverlay(false);
-			getBms();
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+		showLoadingOverlay(false);
+		getBms();
+	}); 
 }
 
 //CONTEXT
@@ -1868,8 +1784,7 @@ function addNewContext(){
 	updateContext(conName);
 }
 
-function updateContext(contextToUpdate)
-{
+function updateContext(contextToUpdate){
 	var clength = contexts.length;
 	var context = undefined;
 	for (i = 0; i < clength; i++) {
@@ -1898,54 +1813,40 @@ function updateContext(contextToUpdate)
 	var enc = window.btoa(JSON.stringify(context[2]));
 
 	var message = { fun: "addContext", username: currUsername, password: currPassword, contextName: context[0], taxoTags: taxos, queries: enc};
-	var messageJSON = JSON.stringify(message);
 	
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			document.getElementById("responseField").innerHTML = this.responseText;
-			var myObj = JSON.parse(this.responseText);
-			
-			if(myObj.result == "success" || true){
-				getContexts(currentContext);
-				showMenu(0);
-			}
-			showLoadingOverlay(false);
-		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+
+		getContexts(currentContext);
+		showMenu(0);
+		showLoadingOverlay(false);
+	});  
 }
 
 function getContexts(contextToShow){
 	var message = { fun: "getContexts", username: currUsername, password: currPassword };
-	var messageJSON = JSON.stringify(message);
 	
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			document.getElementById("responseField").innerHTML = this.responseText;
-			var myObj = JSON.parse(this.responseText);
+	makeAjaxCall(JSON.stringify(message)).then(function(reqResult) 
+	{
+		if(reqResult == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
-			var result = myObj.result;
+		var myObj = JSON.parse(reqResult);
 
-			var myObjLen = result.length;
-
-			contexts = [];
-			
-			for (i = 0; i < myObjLen; i++) {
-				var contextToAdd = [result[i][0][1], result[i][1][1],JSON.parse(window.atob(result[i][2][1]))];
-				contexts.push(contextToAdd);
-			}
-
-			updateContextDropdown();
-			setUpContext(contextToShow);		
+		var result = myObj.result;
+		var myObjLen = result.length;
+		contexts = [];
+		
+		for (i = 0; i < myObjLen; i++) {
+			var contextToAdd = [result[i][0][1], result[i][1][1],JSON.parse(window.atob(result[i][2][1]))];
+			contexts.push(contextToAdd);
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
+
+		updateContextDropdown();
+		setUpContext(contextToShow);	
+	}); 
 }
 
 function setUpContext(contextToShow){
@@ -2340,59 +2241,36 @@ function deleteContext(contextToUpdate)
 	showLoadingOverlay(true);
 
 	var message = { fun: "removeContext", username: currUsername, password: currPassword, contextName: context[0]};
+	
 	var messageJSON = JSON.stringify(message);
 	
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			document.getElementById("responseField").innerHTML = this.responseText;
-			var myObj = JSON.parse(this.responseText);
-			
-			if(myObj.result == "success" || true){
-				getContexts(currentContext);
+	makeAjaxCall(JSON.stringify(message)).then(function(reqResult) 
+	{
+		if(reqResult == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		getContexts(currentContext);
+		showLoadingOverlay(false);	
+	}); 
+}
+
+//AJAX Call
+
+function makeAjaxCall(messageJSON){
+	var promiseObj = new Promise(function(resolve, reject){
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+		if (this.readyState == 4) {
+			if(this.status == 200){
+				resolve(this.responseText)
 			}
-			showLoadingOverlay(false);
 		}
-	};
-	xhttp.open("POST", serverAddress, true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("dataToForward="+messageJSON);  
-}
-
-//AJAX Calls
-function SendRequest(){
-	var messageJSON = JSON.stringify(message);
-	makeAjaxCall(URL, "GET").then(function(result) 
-		{
-			
-		}
-		, errorHandler);
-}
-
-function makeAjaxCall(url){
-   var promiseObj = new Promise(function(resolve, reject){
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", url, true);
-      xhr.send();
-      xhr.onreadystatechange = function(){
-      if (xhr.readyState === 4){
-         if (xhr.status === 200){
-            console.log("xhr done successfully");
-            var resp = xhr.responseText;
-            var respJson = JSON.parse(resp);
-            resolve(respJson);
-         } else {
-            reject(xhr.status);
-            console.log("xhr failed");
-         }
-      } 
-   }
- });
- return promiseObj;
-}
-
-function errorHandler(status){
- console.log("failed with status", status);
+		};
+		xhttp.open("POST", serverAddress, true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("dataToForward="+messageJSON);  
+	 });
+	 
+ 	return promiseObj;
 }
 
 //AUTOCOMPLETE
