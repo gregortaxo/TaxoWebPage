@@ -379,50 +379,63 @@ ul, #myUL {
 			
 			<div id="searchSection" hidden>
 				<div class="w3-half">
-						<div id="taxoSearchCard" class="w3-container w3-center">
-							<div class="outer">
-								<h4 class="w3-wide unselectable w3-text-light-grey">Search</h4>
-								<div class="w3-card-2 w3-round" style="padding: 5px 15px; margin: 5px; background: #2f3136;">
-									<div class="parent"  style="width:100%; margin-top: 10px;">
-											<section class = "w3-center" style="width: 78%">
-												<form autocomplete="off" action="/action_page.php">
-													<div class="autocomplete" style="width:100%;">
-														<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter bookmark name or taxonomy concept" id="TaxoSearchInput">
-													</div>
-												</form>
-											</section>
-											<div style="padding: 1px; width:20%; margin-left: 1%;">
-												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da"
-														onclick="searchTaxo()">Search</button>
-											</div>
-									</div>
-									<div class = "parent" style="margin: 10px 0px;">
-										<select class="w3-button w3-round w3-text-light-grey" name="ChildrenDropdown" id="ChildrenDropdown" style="border: 0px; background: #4f545c; width: 30%;">
-											<option value="1">With Children</option>
-											<option value="2">Without Children</option>
-										</select>
-										<div class="tooltip w3-round w3-text-light-grey unselectable testhover" 
-										style ="background: #4f545c; width: 20%; margin: 0px 5px;padding:8px 16px;vertical-align:middle;">
-											<div>Help</div>
-											<div class="tooltiptextcenter">
-												<p>And search: a & b</p>
-												<p>Or search: a | b</p>
-												<p>Does not include: ! b</p>
-												<p>Brackets: a & (b | c)</p>
-											</div>
+					<div id="taxoSearchCard" class="w3-container w3-center">
+						<div class="outer">
+							<h4 class="w3-wide unselectable w3-text-light-grey">Search</h4>
+							<div class="w3-card-2 w3-round" style="padding: 5px 15px; margin: 5px; background: #2f3136;">
+								<div class="parent"  style="width:100%; margin-top: 5px;">
+										<section class = "w3-center" style="width: 78%">
+											<form autocomplete="off" action="/action_page.php">
+												<div class="autocomplete" style="width:100%;">
+													<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter bookmark name or taxonomy concept" id="BmSearchInput">
+												</div>
+											</form>
+										</section>
+										<div style="padding: 1px; width:20%; margin-left: 1%;">
+											<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da"
+													onclick="searchBms()">Find Bookmark</button>
 										</div>
-										<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)" >Add To Context</button>
-									</div>
 								</div>
-	
-								<div class="inner">
-									<br>	
-									<div id="bmSearchCon"> </div>
-									<div id="taxoSearchCon"> </div>
+								<div class = "parent" style="margin: 10px 0px;">
+									<select class="w3-button w3-round w3-text-light-grey" name="ChildrenDropdown" id="ChildrenDropdown" style="border: 0px; background: #4f545c; width: 30%;">
+										<option value="1">With Children</option>
+										<option value="2">Without Children</option>
+									</select>
+									<div class="tooltip w3-round w3-text-light-grey unselectable testhover" 
+									style ="background: #4f545c; width: 20%; margin: 0px 5px;padding:8px 16px;vertical-align:middle;">
+										<div>Help</div>
+										<div class="tooltiptextcenter">
+											<p>And search: a & b</p>
+											<p>Or search: a | b</p>
+											<p>Does not include: ! b</p>
+											<p>Brackets: a & (b | c)</p>
+										</div>
+									</div>
+									<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)" >Add To Context</button>
+								</div>
+								<div class="parent"  style="width:100%; margin-top: 10px; margin-bottom: 5px;">
+										<section class = "w3-center" style="width: 78%">
+											<form autocomplete="off" action="/action_page.php">
+												<div class="autocomplete" style="width:100%;">
+													<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter taxonomy concept" id="ConceptSearchInput">
+												</div>
+											</form>
+										</section>
+										<div style="padding: 1px; width:20%; margin-left: 1%;">
+											<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #4f545c"
+													onclick="searchTaxo()">Find Concept</button>
+										</div>
 								</div>
 							</div>
-							<br>
+
+							<div class="inner">
+								<br>	
+								<div id="bmSearchCon"> </div>
+								<div id="taxoSearchCon"> </div>
+							</div>
 						</div>
+						<br>
+					</div>
 				</div>
 				<article class="w3-half">
 					<div class="w3-container w3-center">
@@ -570,9 +583,10 @@ function loadTaxoIndex() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-     taxoIndex = this.responseText.split('\n');
-	 autocomplete(document.getElementById("TaxoSearchInput"), taxoIndex, searchTaxo);
-	 autocomplete(document.getElementById("TaxoSearchInput2"), taxoIndex, searchTaxo2);
+     	taxoIndex = this.responseText.split('\n');
+	 	autocomplete(document.getElementById("ConceptSearchInput"), taxoIndex, searchTaxo);
+		autocomplete(document.getElementById("BmSearchInput"), taxoIndex, searchBms);
+		autocomplete(document.getElementById("TaxoSearchInput2"), taxoIndex, searchTaxo2);
     }
   };
   xhttp.open("GET", taxoIndexAddress, true);
@@ -1283,7 +1297,7 @@ function populateTreeViewHelper(parent, children){
 function searchTaxo(){
 	showLoadingOverlay(true);
 	
-	var currSearchWord = document.getElementById("TaxoSearchInput").value.toLowerCase().trim();
+	var currSearchWord = document.getElementById("ConceptSearchInput").value.toLowerCase().trim();
 	
 	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
 	var messageJSON = JSON.stringify(message);
@@ -1294,8 +1308,8 @@ function searchTaxo(){
 			if(this.responseText != ""){
 				var myObj = JSON.parse(this.responseText);
 				addSearchResults(myObj.result);
-				searchBms();
 			}
+			showLoadingOverlay(false);
 		}
 	};
 	xhttp.open("POST", serverAddress, true);
@@ -1480,7 +1494,8 @@ function addSearchResults2(results){
 
 //BOOKMARK SEARCH
 function searchBms(){
-	var query = document.getElementById("TaxoSearchInput").value.toLowerCase().trim();
+	showLoadingOverlay(true);
+	var query = document.getElementById("BmSearchInput").value.toLowerCase().trim();
 
 	var childrenDrop = document.getElementById("ChildrenDropdown").value;
 	var childrenValue = "False";
@@ -1610,7 +1625,8 @@ function addBm(){
 
 					image.src = fileData;
 				}
-				else{
+				else
+				{
 					addBmCont(fileName,cba,fileSize,"");
 				}
 		});
@@ -2183,17 +2199,17 @@ function setUpContext(contextToShow){
 }
 
 function updateSearchFromContextQuery(query){
-	document.getElementById("TaxoSearchInput").value = query;
+	document.getElementById("BmSearchInput").value = query;
 }
 
 function addToSearchField(text,id){
-	var searchField = document.getElementById("TaxoSearchInput").value;
+	var searchField = document.getElementById("BmSearchInput").value;
 
 	if(searchField == ""){
-		document.getElementById("TaxoSearchInput").value = "["+text+","+id+"]";
+		document.getElementById("BmSearchInput").value = "["+text+","+id+"]";
 	}
 	else{
-		document.getElementById("TaxoSearchInput").value += " " + "["+text+","+id+"]";
+		document.getElementById("BmSearchInput").value += " " + "["+text+","+id+"]";
 	}
 }
 
@@ -2238,7 +2254,7 @@ function saveQueryToContext(){
 	}
 
 	var queryName = document.getElementById("newQueryNameInput").value;
-	var query = document.getElementById("TaxoSearchInput").value;
+	var query = document.getElementById("BmSearchInput").value;
 
 	// queryName = queryName.replace(","," ");
 	// query = query.replace(",","");
@@ -2256,7 +2272,7 @@ function updateQueryInContext(ev, queryName){
 		return;
 	}
 
-	var query = document.getElementById("TaxoSearchInput").value;
+	var query = document.getElementById("BmSearchInput").value;
 
 	for(var i = 0; i < contexts[currentContext][2].length; i++ ){
 		if(contexts[currentContext][2][i][0] == queryName){
@@ -2342,6 +2358,43 @@ function deleteContext(contextToUpdate)
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("dataToForward="+messageJSON);  
 }
+
+//AJAX Calls
+function SendRequest(){
+	var messageJSON = JSON.stringify(message);
+	makeAjaxCall(URL, "GET").then(function(result) 
+		{
+			
+		}
+		, errorHandler);
+}
+
+function makeAjaxCall(url){
+   var promiseObj = new Promise(function(resolve, reject){
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      xhr.send();
+      xhr.onreadystatechange = function(){
+      if (xhr.readyState === 4){
+         if (xhr.status === 200){
+            console.log("xhr done successfully");
+            var resp = xhr.responseText;
+            var respJson = JSON.parse(resp);
+            resolve(respJson);
+         } else {
+            reject(xhr.status);
+            console.log("xhr failed");
+         }
+      } 
+   }
+ });
+ return promiseObj;
+}
+
+function errorHandler(status){
+ console.log("failed with status", status);
+}
+
 //AUTOCOMPLETE
 function autocomplete(inp, arr, enterKeyCallback) {
   var currentFocus;
