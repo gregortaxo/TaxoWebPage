@@ -379,63 +379,62 @@ ul, #myUL {
 			
 			<div id="searchSection" hidden>
 				<div class="w3-half">
-					<div id="taxoSearchCard" class="w3-container w3-center">
-						<div class="outer">
-							<h4 class="w3-wide unselectable w3-text-light-grey">Search</h4>
-							<div class="w3-card-2 w3-round" style="padding: 5px 15px; margin: 5px; background: #2f3136;">
-								<div class="parent"  style="width:100%; margin-top: 5px;">
-										<section class = "w3-center" style="width: 78%">
-											<form autocomplete="off" action="/action_page.php">
-												<div class="autocomplete" style="width:100%;">
-													<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter bookmark name or taxonomy concept" id="BmSearchInput">
-												</div>
-											</form>
-										</section>
-										<div style="padding: 1px; width:20%; margin-left: 1%;">
-											<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da"
-													onclick="searchBms()">Find Bookmark</button>
-										</div>
-								</div>
-								<div class = "parent" style="margin: 10px 0px;">
-									<select class="w3-button w3-round w3-text-light-grey" name="ChildrenDropdown" id="ChildrenDropdown" style="border: 0px; background: #4f545c; width: 30%;">
-										<option value="1">With Children</option>
-										<option value="2">Without Children</option>
-									</select>
-									<div class="tooltip w3-round w3-text-light-grey unselectable testhover" 
-									style ="background: #4f545c; width: 20%; margin: 0px 5px;padding:8px 16px;vertical-align:middle;">
-										<div>Help</div>
-										<div class="tooltiptextcenter">
-											<p>And search: a & b</p>
-											<p>Or search: a | b</p>
-											<p>Does not include: ! b</p>
-											<p>Brackets: a & (b | c)</p>
-										</div>
+						<div id="taxoSearchCard" class="w3-container w3-center">
+							<div class="outer">
+								<h4 class="w3-wide unselectable w3-text-light-grey">Search</h4>
+								<div class="w3-card-2 w3-round" style="padding: 5px 15px; margin: 5px; background: #2f3136;">
+									<div class="parent"  style="width:100%; margin-top: 5px;">
+											<section class = "w3-center" style="width: 78%">
+												<form autocomplete="off" action="/action_page.php">
+													<div class="autocomplete" style="width:100%;">
+														<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter bookmark name or taxonomy concept" id="BmSearchInput">
+													</div>
+												</form>
+											</section>
+											<div style="padding: 1px; width:20%; margin-left: 1%;">
+												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da"
+														onclick="searchBms()">Find Bookmark</button>
+											</div>
 									</div>
-									<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)" >Add To Context</button>
-								</div>
-								<div class="parent"  style="width:100%; margin-top: 10px; margin-bottom: 5px;">
-										<section class = "w3-center" style="width: 78%">
-											<form autocomplete="off" action="/action_page.php">
-												<div class="autocomplete" style="width:100%;">
-													<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter taxonomy concept" id="ConceptSearchInput">
-												</div>
-											</form>
-										</section>
-										<div style="padding: 1px; width:20%; margin-left: 1%;">
-											<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #4f545c"
-													onclick="searchTaxo()">Find Concept</button>
+									<div class = "parent" style="margin: 10px 0px;">
+										<select class="w3-button w3-round w3-text-light-grey" name="ChildrenDropdown" id="ChildrenDropdown" style="border: 0px; background: #4f545c; width: 30%;">
+											<option value="1">With Children</option>
+											<option value="2">Without Children</option>
+										</select>
+										<div class="tooltip w3-round w3-text-light-grey unselectable testhover" 
+										style ="background: #4f545c; width: 20%; margin: 0px 5px;padding:8px 16px;vertical-align:middle;">
+											<div>Help</div>
+											<div class="tooltiptextcenter">
+												<p>And search: a & b</p>
+												<p>Or search: a | b</p>
+												<p>Does not include: ! b</p>
+												<p>Brackets: a & (b | c)</p>
+											</div>
 										</div>
+										<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)" >Add To Context</button>
+									</div>
+									<div class="parent"  style="width:100%; margin-top: 10px; margin-bottom: 5px;">
+											<section class = "w3-center" style="width: 78%">
+												<form autocomplete="off" action="/action_page.php">
+													<div class="autocomplete" style="width:100%;">
+														<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter taxonomy concept" id="ConceptSearchInput">
+													</div>
+												</form>
+											</section>
+											<div style="padding: 1px; width:20%; margin-left: 1%;">
+												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #4f545c"
+														onclick="searchTaxo()">Find Concept</button>
+											</div>
+									</div>
+								</div>
+	
+								<div class="inner">
+									<div id="bmSearchCon"> </div>
+									<div id="taxoSearchCon"> </div>
 								</div>
 							</div>
-
-							<div class="inner">
-								<br>	
-								<div id="bmSearchCon"> </div>
-								<div id="taxoSearchCon"> </div>
-							</div>
+							<br>
 						</div>
-						<br>
-					</div>
 				</div>
 				<article class="w3-half">
 					<div class="w3-container w3-center">
@@ -1297,6 +1296,11 @@ function addSearchResults(results){
 		myNode.removeChild(myNode.firstChild);
 	}
 
+	var bmsNode = document.getElementById("bmSearchCon");
+	while (bmsNode.firstChild) {
+		bmsNode.removeChild(bmsNode.firstChild);
+	}
+
 	var resultsLength = 0;
 
 	if(results != undefined){
@@ -1304,7 +1308,6 @@ function addSearchResults(results){
 	}
 	
 	var resNode = document.createElement("h4");
-	resNode.style = "margin-top: 20px";
 	resNode.classList.add("w3-text-light-grey");
 	var resCount = document.createTextNode("Taxonomy search: " + resultsLength + " results");
 	resNode.appendChild(resCount)
@@ -1476,6 +1479,11 @@ function addBmSearchResults(bms){
 	var myNode = document.getElementById("bmSearchCon");
 	while (myNode.firstChild) {
 		myNode.removeChild(myNode.firstChild);
+	}
+
+	var taxoNode = document.getElementById("taxoSearchCon");
+	while (taxoNode.firstChild) {
+		taxoNode.removeChild(taxoNode.firstChild);
 	}
 
 	var bmsLength = 0;
