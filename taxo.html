@@ -1598,6 +1598,12 @@ function addBm(){
 			promise.then(function(result) {
 				fileData = result;
 
+				if(fileData == "data:")
+				{
+					addBmCont("","",0,"");
+					return;
+				}
+
 				var base64HeadAndBody = fileData.split(";base64,");
 				var abc = base64HeadAndBody[1].replace(/\+/g,"-");
 				var cba = base64HeadAndBody[0] + ";base64," + abc;
