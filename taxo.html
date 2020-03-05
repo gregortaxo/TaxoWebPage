@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<script src="http://code.jquery.com/jquery-git2.js"></script>
 <style>
 .unselectable {
     -webkit-touch-callout: none;
@@ -170,7 +171,7 @@ textarea:focus {
   visibility: visible !important; 
 }
 
-.tooltip .tooltiptextleft {
+.tooltip .tooltiptextright {
   visibility: hidden;
   min-width: 300px;
   background-color: #202225;
@@ -183,10 +184,10 @@ textarea:focus {
   position: absolute;
   z-index: 50000;
   top: 0%;
-  left: 75%;
+  left: 100%;
 }
 
-.tooltip:hover .tooltiptextleft {
+.tooltip:hover .tooltiptextright {
   visibility: visible !important; 
 }
 
@@ -200,6 +201,14 @@ ul, #myUL {
 #myUL {
   margin: 0;
   padding: 0;
+}
+
+li {
+  cursor: pointer;
+}
+
+li:hover { 
+    color: #7289da ;
 }
 
 .caret {
@@ -242,6 +251,10 @@ ul, #myUL {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
+}
+
+[hidden] {
+    display: none !important;
 }
 </style>
 
@@ -302,18 +315,18 @@ ul, #myUL {
 	</div>
 
 	<div id="connectBmToConceptMenu" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
-		transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
-		<h4 class="w3-text-light-grey">Add Concept To Bookmark</h4>
-		<section class = "w3-center">
-			<form autocomplete="off" action="/action_page.php">
-				<div class="autocomplete" style="width:100%;">
-					<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter Bookmark Name" id="bmName">
-				</div>
-			</form>
-			<p>
-				<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c;" onclick="addTag()">Add</button>
-			</p>
-		</section>
+			transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;
+			display: flex;  flex-direction: column; max-height: 75%;  overflow: hidden;">
+			<h4 class="w3-text-light-grey">Add Concept To Bookmark</h4>
+			<section class = "w3-center">
+				<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter Bookmark Name" id="bmName" onkeyup="filter()"> </input>
+				<p>
+					<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c;" onclick="addTag()">Add</button>
+				</p>
+			</section>
+			<div style="flex: 1; overflow-y: scroll; scrollbar-width: thin; scrollbar-color: #202225 #36393f;"> 
+				<ul id="bmListMenu" class="w3-text-light-grey" style="padding:0px;"></ul>
+			</div>
 	</div>
 
 	<div id="infoBox" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
@@ -333,50 +346,25 @@ ul, #myUL {
 			onclick="switchView(3)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">bookmarks</i></button>
 			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkTreeButton2"
 			onclick="switchView(4)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">account_tree</i></button>
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="InfoButton2"
+			onclick="switchView(5)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">info</i></button>
 	</section>
 
 	<div class="parent">
 		<section style="padding: 10px 0px; margin: 0px; width: 1%; max-width: 10%; z-index: 100" id="navigationVertical">
 			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="SearchButton"
-				onclick="switchView(2)">
-					<i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">search</i>
-			</button>
+				onclick="switchView(2)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">search</i></button>
 			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="NavigationButton"
 				onclick="switchView(1)"><i class="material-icons" style="color:#f1f1f1; padding: 3px 0px 0px 1px;">layers</i></button>
 			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkListButton"
 				onclick="switchView(3)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">bookmarks</i></button>
 			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="BookmarkTreeButton"
 				onclick="switchView(4)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">account_tree</i></button>
+			<button class="w3-button w3-center w3-text-light-grey w3-round" style="background: #36393f;" id="InfoButton"
+				onclick="switchView(5)"><i class="material-icons" style="color:#f1f1f1; padding: 4px 0px 0px 0px;">info</i></button>
 		</section>
 				
 		<div class="w3-container w3-center w3-content"  style="min-width: 90%; max-width: 90%; padding: 0px;" >
-			<div id="taxoNavCard">
-				<article class="w3-third">
-					<h4 class="unselectable w3-text-light-grey w3-wide ">Parents</h4>
-					<div id="taxoNavConParents" style="margin-top: 15px"> </div>
-				</article>
-	
-				<article class="w3-third">
-					<h4 class="unselectable w3-text-light-grey w3-wide ">Word</h4>
-					<div style="margin-left: 15px; margin-right: 15px; margin-top: 15px">
-						<div id="taxoNavConWord"> </div>
-						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
-								onclick="showMenu(5)">Add To Bookmark</button>
-						<div id="ConnectedThings" class="w3-container w3-center w3-content w3-card-2" style="background: #36393f;" hidden>
-							<h4 class="w3-text-light-grey" style="margin: 2px">Bookmarks</h4>
-							<div id="ConnectedThingsCon" style="padding-bottom: 10px;"></div>
-						</div>
-					</div>
-				</article>
-	
-				<article class="w3-third">
-					<h4 class="unselectable w3-text-light-grey w3-wide ">Children</h4>
-					<div style="overflow: auto; max-height: 90vh">
-						<div id="taxoNavConChildren"> </div>
-					</div>
-				</article>
-			</div>
-			
 			<div id="searchSection" hidden>
 				<div class="w3-half">
 						<div id="taxoSearchCard" class="w3-container w3-center">
@@ -451,31 +439,45 @@ ul, #myUL {
 					</div>
 				</article>
 			</div>
-	
-			<div id="bmSectionWrap" hidden>
+			<div id="taxoNavCard">
 				<article class="w3-third">
-					<div id="bmSection">
-						<div id="userBmsCard" class="w3-container w3-center w3-content"> 
-							<div class="outer w3-center">
-								<h4 class="w3-wide unselectable w3-center w3-text-light-grey">User Bookmarks</h4>
-								<div class="w3-center">
-									<button class="w3-button w3-text-light-grey w3-round" onclick="showMenu(3)"
-										style="background: #4f545c; margin-bottom: 10px; width: 200px;;">Add Bookmark</button>
-								</div>
-								<div id="bmsCon" class="inner"> </div>
-							</div> 
+					<h4 class="unselectable w3-text-light-grey w3-wide ">Parents</h4>
+					<div id="taxoNavConParents" style="margin-top: 15px"> </div>
+				</article>
+	
+				<article class="w3-third">
+					<h4 class="unselectable w3-text-light-grey w3-wide ">Word</h4>
+					<div style="margin-left: 15px; margin-right: 15px; margin-top: 15px">
+						<div id="taxoNavConWord"> </div>
+						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
+								onclick="showMenu(5)">Add To Bookmark</button>
+						<div id="ConnectedThings" class="w3-container w3-center w3-content w3-card-2" style="background: #36393f;" hidden>
+							<h4 class="w3-text-light-grey" style="margin: 2px">Bookmarks</h4>
+							<div id="ConnectedThingsCon" style="padding-bottom: 10px;"></div>
 						</div>
 					</div>
 				</article>
-		
+	
+				<article class="w3-third">
+					<h4 class="unselectable w3-text-light-grey w3-wide ">Children</h4>
+					<div style="overflow: auto; max-height: 90vh">
+						<div id="taxoNavConChildren"> </div>
+					</div>
+				</article>
+			</div>
+			<div id="bmSectionWrap" hidden>
 				<article class="w3-twothird" >
 					<div id="bmDetails">
 						<div id="BmDetCard" class="w3-container w3-center w3-content"> 
 							<div class="outer">
 									<h4 class="w3-wide unselectable w3-center w3-round w3-text-light-grey">Bookmark Details</h4>
-									<div id="bmDetCon"> </div>
-									<img id= "testImage" width="200" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
-									<div class="w3-card-2 inner w3-round" style="margin: 10px; background: #2f3136;">
+									<div id="bmDetCon"></div>
+									<div class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 10px; background: #2f3136;">
+										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">File Preview</h5>
+										<img id= "imagePreview" width="200" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
+										<div class="w3-text-light-grey" id= "textPreview"></div>
+									</div>
+									<div class="w3-card-2 inner w3-round" style="margin: 10px; background: #2f3136;" hidden>
 										<h4 class="w3-wide unselectable w3-text-light-grey">Add Concepts To Bookmark</h4>
 										<div class="parent" style="width:100%; margin-top: 10px; padding: 10px">
 											<section class = "w3-center" style="width: 78%;">
@@ -497,12 +499,40 @@ ul, #myUL {
 						</div>
 					</div>
 				</article>
+				<article class="w3-third">
+					<div id="bmSection">
+						<div id="userBmsCard" class="w3-container w3-center w3-content"> 
+							<div class="outer w3-center">
+								<h4 class="w3-wide unselectable w3-center w3-text-light-grey">User Bookmarks</h4>
+								<div class="w3-center">
+									<button class="w3-button w3-text-light-grey w3-round" onclick="showMenu(3)"
+										style="background: #4f545c; margin-bottom: 10px; width: 200px;;">Add Bookmark</button>
+								</div>
+								<div id="bmsCon" class="inner"> </div>
+							</div> 
+						</div>
+					</div>
+				</article>
 			</div>
 			<div id="bmTreeView" hidden>
 				<h4 class="w3-wide unselectable; w3-text-light-grey">Bookmark Tree</h4>
 				<button class="w3-button w3-text-light-grey w3-round" onclick="showTreeView()"
-				style="background: #4f545c; margin-bottom: 10px; width: 200px;;">Tree View</button>
-				<ul id="myUL" style="text-align: left;"></ul>
+				style="background: #4f545c; margin-bottom: 10px; width: 200px;">Tree View</button>
+				<div  style="max-width: 1000px;  margin: auto;"  >
+					<ul id="myUL" style="text-align: left;"></ul>
+				</div>
+			</div>
+			<div id="infoView" hidden>
+				<h4 class="w3-wide unselectable w3-text-light-grey">Account</h4>
+				<div class="w3-card-2 w3-round parent" style="max-width: 1000px;  margin: auto; padding: 5px 15px; background: #2f3136;">
+					<div>
+						<div align="left" style="color: #747880; font-weight: bold; ">Username</div> 
+						<div align="left" class = "w3-text-light-grey" id="userNameLabel"></div>
+						<div align="left" style="color: #747880; font-weight: bold; ">Number Of User Bookmarks</div> 
+						<div align="left" class = "w3-text-light-grey" id="numOfBmLabel"></div>
+					</div>
+					<button align="right" class="w3-button w3-text-light-grey w3-round" onclick="reloadPage()" style="background: #7289da; height: 40px;">Log Out</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -585,7 +615,6 @@ function loadTaxoIndex() {
      	taxoIndex = this.responseText.split('\n');
 	 	autocomplete(document.getElementById("ConceptSearchInput"), taxoIndex, searchTaxo);
 		autocomplete(document.getElementById("BmSearchInput"), taxoIndex, searchBms);
-		autocomplete(document.getElementById("TaxoSearchInput2"), taxoIndex, searchTaxo2);
     }
   };
   xhttp.open("GET", taxoIndexAddress, true);
@@ -594,6 +623,8 @@ function loadTaxoIndex() {
 
 async function loggedIn(){
 	switchView(2);
+
+	document.getElementById("userNameLabel").innerHTML = currUsername;
 
 	await getBms();
 	await loadNavigation();
@@ -609,13 +640,15 @@ function switchView(view){
 		document.getElementById("searchSection"),
 		document.getElementById("bmSectionWrap"),
 		document.getElementById("bmTreeView"),
+		document.getElementById("infoView")
 	];
 
 	var buttons = [
 		document.getElementById("NavigationButton"),
 		document.getElementById("SearchButton"),
 		document.getElementById("BookmarkListButton"),
-		document.getElementById("BookmarkTreeButton")
+		document.getElementById("BookmarkTreeButton"),
+		document.getElementById("InfoButton")
 	];
 
 	for(var i = 0; i < views.length; i++){
@@ -761,8 +794,14 @@ function addNavResults(results){
 			
 			var countTmp;
 			
-			if(j == 0){ countTmp = 1; }
-			else { countTmp = results[j][1].length;}
+			if(j == 0)
+			{ 
+				countTmp = 1; 
+			}
+			else 
+			{ 
+				countTmp = results[j][1].length;
+			}
 			
 			for (var i = 0; i < countTmp ; i++) { 
 				var tmpResult
@@ -918,6 +957,10 @@ function addUserBms(bms){
 	while (myNode.firstChild) {
 		myNode.removeChild(myNode.firstChild);
 	}
+
+	document.getElementById("numOfBmLabel").innerHTML = bms.length;
+	
+
 	if(bms.length > 0){
 		for (var i = 0; i < bms.length; i++) { 
 				var card = document.createElement("div");
@@ -961,8 +1004,47 @@ function addCurrBms(bms){
 		}
 	}
 
-	autocomplete(document.getElementById("bmName"), currBookmarks, addTag);	
+	var list = document.getElementById("bmListMenu");
+
+	while (list.firstChild) {
+		list.removeChild(list.firstChild);
+	}
+
+    for (var i = 0; i <  bms.length; i++) {
+        var item = document.createElement('li');
+
+        item.appendChild(document.createTextNode(bms[i][0]));
+
+        // Add it to the list:
+        list.appendChild(item);
+    }
+
+	//autocomplete(document.getElementById("bmName"), currBookmarks, addTag);	
 }
+
+function filter() {
+        var value = document.getElementById("bmName").value;
+        $("#bmListMenu > li").each(function() {
+            if ($(this).text().search(value) > -1) {
+                $(this).show();
+            }
+            else {
+                $(this).hide();
+            }
+        });
+    }
+
+function getEventTarget(e) {
+	e = e || window.event;
+	return e.target || e.srcElement; 
+}
+
+var ul = document.getElementById("bmListMenu");
+ul.onclick = function(event) {
+	var target = getEventTarget(event);
+	document.getElementById("bmName").value = target.innerHTML;
+	filter();
+};
 
 function showBmDetails(bookmark, showDetails){
 	currentDetails = bookmark;
@@ -1097,7 +1179,7 @@ function showBmDetails(bookmark, showDetails){
 		switchView(3);
 	}
 
-	var image = document.getElementById('testImage');
+	var image = document.getElementById('imagePreview');
 	image.removeAttribute('src');
 	
 	showImagePreview(bm[0]);
@@ -1106,15 +1188,23 @@ function showBmDetails(bookmark, showDetails){
 function showImagePreview(bookmark){
 	if(imagePreviewCache[bookmark] != undefined)
 	{
+		var image = document.getElementById('imagePreview');
+		var textPreview = document.getElementById('textPreview');
 		if(imagePreviewCache[bookmark] == "")
 		{
-			var image = document.getElementById('testImage');
 			image.removeAttribute('src');
+			textPreview.innerHTML = "";
 			return;
 		}
-		
-		var image = document.getElementById('testImage');
-		image.src = imagePreviewCache[bookmark];
+		else if(imagePreviewCache[bookmark].startsWith("data:image"))
+		{
+			textPreview.innerHTML = "";
+			image.src = imagePreviewCache[bookmark];
+		}
+		else{
+			image.removeAttribute('src');
+			textPreview.innerHTML = window.atob(imagePreviewCache[bookmark]);
+		}
 	}
 	else
 	{
@@ -1132,16 +1222,34 @@ function showImagePreview(bookmark){
 			}
 			else
 			{
-				var base64HeadAndBody = myObj.result.split(";base64,");
-				var abc = base64HeadAndBody[1].replace(/-/g,"+");
-				var cba = base64HeadAndBody[0] + ";base64," + abc;
+				if(myObj.result.startsWith("data:image"))
+				{
+					var base64HeadAndBody = myObj.result.split(";base64,");
+					var abc = base64HeadAndBody[1].replace(/-/g,"+");
+					var cba = base64HeadAndBody[0] + ";base64," + abc;
 
-				imagePreviewCache[bookmark] = cba;
+					imagePreviewCache[bookmark] = cba;
+				}
+				else{
+					imagePreviewCache[bookmark] = myObj.result;
+				}
+
 
 				if(currentDetails == bookmark)
 				{
-					var image = document.getElementById('testImage');
-					image.src = imagePreviewCache[bookmark];
+					var image = document.getElementById('imagePreview');
+					var textPreview = document.getElementById('textPreview');
+
+					if(imagePreviewCache[bookmark].startsWith("data:image"))
+					{
+						textPreview.innerHTML = "";
+						image.src = imagePreviewCache[bookmark];
+					}
+					else
+					{
+						image.removeAttribute('src');
+						textPreview.innerHTML = window.atob(imagePreviewCache[bookmark]);
+					}
 				}
 			}
 		});
@@ -1273,23 +1381,6 @@ function searchTaxo(){
 	});
 }
 
-function searchTaxo2(){
-	showLoadingOverlay(true);
-	var currSearchWord = document.getElementById("TaxoSearchInput2").value.toLowerCase().trim();
-
-	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
-	
-	makeAjaxCall(JSON.stringify(message)).then(function(result) 
-	{
-		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
-
-		var myObj = JSON.parse(result);
-		
-		addSearchResults2(myObj.result);
-		showLoadingOverlay(false);
-	});
-}
-
 function addSearchResults(results){
 	var myNode = document.getElementById("taxoSearchCon");
 	while (myNode.firstChild) {
@@ -1353,10 +1444,17 @@ function addSearchResults(results){
 
 				var tooltiptextDiv = document.createElement("div");
 
+				var tooltiptextSpanHeader = document.createElement("div");
+				tooltiptextSpanHeader.innerHTML = results[i][1];
+				tooltiptextSpanHeader.style = "font-weight: bold";
+				tooltiptextSpanHeader.style.marginBottom = "5px";
+				tooltiptextDiv.appendChild(tooltiptextSpanHeader);
+
 				var tooltiptextSpan = document.createElement("span");
 				tooltiptextSpan.innerHTML = results[i][3];
 				tooltiptextDiv.appendChild(tooltiptextSpan);
-				tooltiptextDiv.classList.add("tooltiptext");
+
+				tooltiptextDiv.classList.add("tooltiptextright");
 				hoverArea.appendChild(tooltiptextDiv);
 
 				var butPara = document.createElement("p");
@@ -1390,60 +1488,6 @@ function addSearchResults(results){
 
 				tooltiptextDiv.appendChild(butPara);
 
-				myNode.appendChild(card);
-		}
-	}		
-}
-
-function addSearchResults2(results){
-	var myNode = document.getElementById("taxoSearchCon2");
-	while (myNode.firstChild) {
-		myNode.removeChild(myNode.firstChild);
-	}
-	
-	var resNode = document.createElement("h4");
-	resNode.style = "margin-top: 20px";
-	resNode.classList.add("w3-text-light-grey");
-	var resCount = document.createTextNode("Taxonomy search: " + results.length + " results");
-	resNode.appendChild(resCount)
-	myNode.appendChild(resNode);
-		
-	if(results.length > 0){	
-		for (var i = 0; i < results.length; i++) { 
-				var card = document.createElement("div");
-				card.style.margin = "7px";
-				card.style.background = "#36393f";	
-				card.classList.add("testhover");
-				card.classList.add("w3-round");
-				
-				var tmp = "addTag2('"+currentDetails+"','"+ results[i][0] +"','"+ results[i][1]+"')";
-				card.setAttribute("onclick",tmp);		
-				
-				var card2 = document.createElement("div");
-				card.classList.add("w3-card-2")
-				var header = document.createElement("header");
-				header.classList.add("w3-container");
-				header.classList.add("unselectable");
-				header.classList.add("w3-text-light-grey");
-				card.appendChild(header);
-				var h1 = document.createElement("h4");
-			
-				var tmpTitle = results[i][1];
-				var title = tmpTitle.replace(/,/g, ", ");
-				var node = document.createTextNode(title);
-				h1.appendChild(node);
-				header.appendChild(h1);
-			
-				var para = document.createElement("div");
-				var text = document.createTextNode(results[i][3]);
-				para.appendChild(text);
-				para.classList.add("unselectable");
-				para.classList.add("w3-text-light-grey");
-				card2.appendChild(para);	
-				card2.style.padding = "5px 5px 15px 5px";
-				
-				card.appendChild(card2);
-				
 				myNode.appendChild(card);
 		}
 	}		
@@ -1500,31 +1544,31 @@ function addBmSearchResults(bms){
 	
 	if(bmsLength > 0){
 		for (var i = 0; i < bms.length; i++) { 
-				var card = document.createElement("div");
-				card.style = "margin: 7px";					
-				card.classList.add("w3-card-2");
-				card.classList.add("w3-round");
-				card.classList.add("testhover");
+			var card = document.createElement("div");
+			card.style = "margin: 7px";					
+			card.classList.add("w3-card-2");
+			card.classList.add("w3-round");
+			card.classList.add("testhover");
 
-				var header = document.createElement("header");
-				header.classList.add("w3-container");
-				header.classList.add("w3-text-light-grey");
-				header.classList.add("unselectable");
-				card.appendChild(header);
+			var header = document.createElement("header");
+			header.classList.add("w3-container");
+			header.classList.add("w3-text-light-grey");
+			header.classList.add("unselectable");
+			card.appendChild(header);
 
-				var h1 = document.createElement("h5");
-				card.style.background ="#202225";
-				h1.style.margin ="7px";
+			var h1 = document.createElement("h5");
+			card.style.background ="#202225";
+			h1.style.margin ="7px";
+		
+			var node = document.createTextNode(bms[i][0]);
+			h1.classList.add("w3-text-light-grey");
+			h1.appendChild(node);
 			
-				var node = document.createTextNode(bms[i][0]);
-				h1.classList.add("w3-text-light-grey");
-				h1.appendChild(node);
-				
-				var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
-				h1.setAttribute("onclick",tmpOnClick);
+			var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
+			h1.setAttribute("onclick",tmpOnClick);
 
-				header.appendChild(h1);
-				myNode.appendChild(card);
+			header.appendChild(h1);
+			myNode.appendChild(card);
 		}
 	}		
 }
@@ -1583,6 +1627,19 @@ function addBm(){
 					}
 
 					image.src = fileData;
+				}
+				else if(fileData.startsWith("data:text"))
+				{	
+					var text = window.atob(base64HeadAndBody[1]);
+
+					if(text.length > 2000){
+						text = text.substring(0, 2000);
+					}
+
+					var encodedText = window.btoa(text);
+
+					imagePreviewCache[document.getElementById("newBmName").value] = encodedText;
+					addBmCont(fileName,cba,fileSize,encodedText);
 				}
 				else
 				{
@@ -1768,20 +1825,6 @@ function addTag(){
 		getBms();
 		updateNavigation(event,currTaxoId);
 		showMenu(0);
-	}); 
-}
-
-function addTag2(bmName, taxoId, taxoName){
-	showLoadingOverlay(true);
-	
-	var message = { fun: "addTaxoTag", username: currUsername, password: currPassword, name: bmName, taxoId: taxoId, taxoName: taxoName };
-	
-	makeAjaxCall(JSON.stringify(message)).then(function(result) 
-	{
-		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
-
-		showLoadingOverlay(false);
-		getBms();
 	}); 
 }
 
@@ -2279,6 +2322,12 @@ function makeAjaxCall(messageJSON){
 	 });
 	 
  	return promiseObj;
+}
+
+//RELOAD PAGE
+
+function reloadPage(){
+	location.reload();
 }
 
 //AUTOCOMPLETE
