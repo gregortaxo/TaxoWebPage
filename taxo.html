@@ -3,7 +3,7 @@
 <title>Taxonomy</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="UTF-8">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <script src="http://code.jquery.com/jquery-git2.js"></script>
 <style>
@@ -271,7 +271,7 @@ li:hover {
 	</section>
 	<p class="w3-text-light-grey" id="responseField" align="left" style="padding-left: 10px;"></p>
 	<button class="w3-button w3-text-light-grey w3-round" onclick="logIn()" style="margin-bottom: 10px; background: #7289da;">Login</button>
-	<button class="w3-button w3-text-light-grey w3-round" onclick="RegisterUser()" style="margin-bottom: 10px; background: #4f545c;">Register</button>
+	<button class="w3-button w3-text-light-grey w3-round" onclick="registerUser()" style="margin-bottom: 10px; background: #4f545c;">Register</button>
   </p>
   <br>
 </section>
@@ -543,8 +543,8 @@ li:hover {
 //var serverAddress = "http://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoForward.php";
 //var taxoIndexAddress = "http://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoIndex.txt";
 
-// var serverAddress = "http://192.168.1.7/taxoForwardLocal.php";
-// var taxoIndexAddress = "http://192.168.1.7/taxoIndex.txt";
+//var serverAddress = "http://192.168.1.8/taxoForwardLocal.php";
+//var taxoIndexAddress = "http://192.168.1.8/taxoIndex.txt";
 
 var serverAddress = "http://localhost/taxoForwardLocal.php";
 var taxoIndexAddress = "http://localhost/taxoIndex.txt";
@@ -719,7 +719,7 @@ function logIn(){
 	});
 }
 
-function RegisterUser(){
+function registerUser(){
 	var message = { fun: "regUser", username: document.getElementById("UsernameInput").value, password: document.getElementById("PassInput").value };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
@@ -1182,29 +1182,13 @@ function showBmDetails(bookmark, showDetails){
 	var image = document.getElementById('imagePreview');
 	image.removeAttribute('src');
 	
-	showImagePreview(bm[0]);
+	loadFilePreview(bm[0]);
 }
 
-function showImagePreview(bookmark){
+function loadFilePreview(bookmark){
 	if(imagePreviewCache[bookmark] != undefined)
 	{
-		var image = document.getElementById('imagePreview');
-		var textPreview = document.getElementById('textPreview');
-		if(imagePreviewCache[bookmark] == "")
-		{
-			image.removeAttribute('src');
-			textPreview.innerHTML = "";
-			return;
-		}
-		else if(imagePreviewCache[bookmark].startsWith("data:image"))
-		{
-			textPreview.innerHTML = "";
-			image.src = imagePreviewCache[bookmark];
-		}
-		else{
-			image.removeAttribute('src');
-			textPreview.innerHTML = window.atob(imagePreviewCache[bookmark]);
-		}
+		showFilePreview(bookmark)
 	}
 	else
 	{
@@ -1233,29 +1217,35 @@ function showImagePreview(bookmark){
 				else{
 					imagePreviewCache[bookmark] = myObj.result;
 				}
+			}
 
-
-				if(currentDetails == bookmark)
-				{
-					var image = document.getElementById('imagePreview');
-					var textPreview = document.getElementById('textPreview');
-
-					if(imagePreviewCache[bookmark].startsWith("data:image"))
-					{
-						textPreview.innerHTML = "";
-						image.src = imagePreviewCache[bookmark];
-					}
-					else
-					{
-						image.removeAttribute('src');
-						textPreview.innerHTML = window.atob(imagePreviewCache[bookmark]);
-					}
-				}
+			if(currentDetails == bookmark)
+			{
+				showFilePreview(bookmark)
 			}
 		});
 	}
 }
 
+function showFilePreview(bookmark){
+	var image = document.getElementById('imagePreview');
+		var textPreview = document.getElementById('textPreview');
+		if(imagePreviewCache[bookmark] == "")
+		{
+			image.removeAttribute('src');
+			textPreview.innerHTML = "";
+			return;
+		}
+		else if(imagePreviewCache[bookmark].startsWith("data:image"))
+		{
+			textPreview.innerHTML = "";
+			image.src = imagePreviewCache[bookmark];
+		}
+		else{
+			image.removeAttribute('src');
+			textPreview.innerHTML = window.atob(imagePreviewCache[bookmark]);
+		}
+}
 //TREE
 
 function showTreeView(){
