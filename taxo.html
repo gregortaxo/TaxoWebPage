@@ -1271,7 +1271,6 @@ function loadSimilarBms(bookmark){
 		var myObj = JSON.parse(result);
 
 		addSimilarBms(myObj.result);
-		
 	});
 }
 
@@ -1279,6 +1278,15 @@ function addSimilarBms(bms){
 	var myNode = document.getElementById("similarBmsCon");
 	while (myNode.firstChild) {
 		myNode.removeChild(myNode.firstChild);
+	}
+
+	var simBmsDiv = document.getElementById("similarBmsDiv");
+
+	if(bms.length == 0){
+		simBmsDiv.hidden = true;
+	}
+	else{
+		simBmsDiv.hidden = false;
 	}
 
 	for (var i = 0; i < bms.length; i++) { 
