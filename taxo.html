@@ -516,8 +516,8 @@ li:hover {
 			</div>
 			<div id="bmTreeView" hidden>
 				<h4 class="w3-wide unselectable; w3-text-light-grey">Bookmark Tree</h4>
-				<button class="w3-button w3-text-light-grey w3-round" onclick="showTreeView()"
-				style="background: #4f545c; margin-bottom: 10px; width: 200px;">Tree View</button>
+				<!-- <button class="w3-button w3-text-light-grey w3-round" onclick="showTreeView()"
+				style="background: #4f545c; margin-bottom: 10px; width: 200px;">Tree View</button> -->
 				<div  style="max-width: 1000px;  margin: auto;"  >
 					<ul id="myUL" style="text-align: left;"></ul>
 				</div>
@@ -564,6 +564,7 @@ var taxoIndex = [];
 var currentDetails = "";
 
 var taxoCache = {};
+var taxoCacheLoaded = {};
 var imagePreviewCache = {};
 
 var contexts = [];
@@ -574,6 +575,8 @@ var sendInChunksdataToSend = "";
 var sendInChunksiter = "";
 
 var firstLoadDoNotShowTaxoNav = true;
+
+var bmTreeNeedsUpdate = true;
 
 function showLoadingOverlay(value){
 	document.getElementById("overlayDiv").hidden = !value;
@@ -656,6 +659,10 @@ function switchView(view){
 		{
 			views[i].hidden = false;
 			buttons[i].style.background = "#7289da";
+
+			if(i == 3){
+				showTreeView()
+			}
 		}
 		else{
 			views[i].hidden = true;
@@ -744,11 +751,25 @@ function updateNavigation(ev,taxoWord){
 
 	showLoadingOverlay(true);
 
+	var taxoCached = false;
+	
+	if(	taxoCacheLoaded[taxoWord] != undefined)
+	{
+		taxoCached = true;
+	}
+
+	var taxoCachedPartially = false;
+
 	if(taxoCache[taxoWord] != undefined)
 	{
 		addNavResults(taxoCache[taxoWord]);
 		switchView(1);
-		return;
+
+		if(taxoCached){
+			return;
+		}
+
+		taxoCachedPartially = true;
 	}	
 
 	var message = { fun: "searchTaxo", username: currUsername, password: currPassword, word: taxoWord };
@@ -758,14 +779,21 @@ function updateNavigation(ev,taxoWord){
 		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
 		var myObj = JSON.parse(result);
-		addNavResults(myObj.result);
 
-		taxoCache[taxoWord] = myObj.result;
-
-		if(firstLoadDoNotShowTaxoNav == false){
-			switchView(1);
+		for(var j = 0; j < myObj.result.length; j++){
+			taxoCache[myObj.result[j][0][1][0]] = myObj.result[j];
 		}
-		firstLoadDoNotShowTaxoNav = false;
+
+		taxoCacheLoaded[taxoWord] = true;
+
+		if(taxoCachedPartially == false){
+			addNavResults(taxoCache[taxoWord]);
+
+			if(firstLoadDoNotShowTaxoNav == false){
+				switchView(1);
+			}
+			firstLoadDoNotShowTaxoNav = false;
+		}
 	});
 }
 
@@ -1249,6 +1277,11 @@ function showFilePreview(bookmark){
 //TREE
 
 function showTreeView(){
+
+	if(bmTreeNeedsUpdate ==  false){
+		return;
+	}
+
 	showLoadingOverlay(true);
 
 	var message = { fun: "getBookmarkTree", username: currUsername, password: currPassword};
@@ -1261,6 +1294,8 @@ function showTreeView(){
 		
 		showLoadingOverlay(false);
 		populateTreeView(myObj.result);
+
+		bmTreeNeedsUpdate = false;
 	});
 }
 
@@ -1692,6 +1727,7 @@ function addBmCont(fileName, fileData,fileSize,imagePreview){
 				showMessage("Bookmark was successfully saved");
 				showLoadingOverlay(false);
 				getBms();
+				bmTreeNeedsUpdate = true;
 			}
 		}
 	});
@@ -1789,6 +1825,7 @@ function removeBookmark(bmToDelete){
 
 		if(myObj.result == "bookmark_removed"){
 			showMessage("Bookmark deleted");
+			bmTreeNeedsUpdate = true;
 		}
 		else{
 			showMessage(myObj.result);
@@ -1818,6 +1855,7 @@ function addTag(){
 		var myObj = JSON.parse(result);
 
 		showLoadingOverlay(false);
+		bmTreeNeedsUpdate = true;
 		getBms();
 		updateNavigation(event,currTaxoId);
 		showMenu(0);
