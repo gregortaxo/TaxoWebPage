@@ -399,7 +399,7 @@ li:hover {
 												<p>Brackets: a & (b | c)</p>
 											</div>
 										</div>
-										<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)" >Add To Context</button>
+										<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)">Add To Context</button>
 									</div>
 									<div class="parent"  style="width:100%; margin-top: 10px; margin-bottom: 5px;">
 											<section class = "w3-center" style="width: 78%">
@@ -472,28 +472,14 @@ li:hover {
 							<div class="outer">
 									<h4 class="w3-wide unselectable w3-center w3-round w3-text-light-grey">Bookmark Details</h4>
 									<div id="bmDetCon"></div>
-									<div class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 10px; background: #2f3136;">
+									<div id="filePreviewDiv" class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 10px; background: #2f3136;">
 										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">File Preview</h5>
 										<img id= "imagePreview" width="250" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
-										<div class="w3-text-light-grey" id= "textPreview"></div>
+										<div class="w3-text-light-grey" style="margin: 0px; padding-left: 5px; padding-right: 5px;" id= "textPreview"></div>
 									</div>
-									<div class="w3-card-2 inner w3-round" style="margin: 10px; background: #2f3136;" hidden>
-										<h4 class="w3-wide unselectable w3-text-light-grey">Add Concepts To Bookmark</h4>
-										<div class="parent" style="width:100%; margin-top: 10px; padding: 10px">
-											<section class = "w3-center" style="width: 78%;">
-												<form autocomplete="off" action="/action_page.php">
-													<div class="autocomplete" style="width:100%;">
-														<input class="w3-text-light-grey w3-round" type="text" placeholder="Taxonomy Search" id="TaxoSearchInput2">
-													</div>
-												</form>
-											</section>
-											<div style="padding: 1px; width:20%; margin-left: 1%;">
-												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da " onclick="searchTaxo2()">Search</button>
-											</div>
-										</div>
-										<div>
-											<div id="taxoSearchCon2" style="background: #2f3136;"> </div>
-										</div>
+									<div id="similarBmsDiv" class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 5px; background: #2f3136;">
+										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">Similar Bookmarks</h5>
+										<div id= "similarBmsCon"></div>
 									</div>
 							</div> 
 						</div>
@@ -1077,11 +1063,6 @@ ul.onclick = function(event) {
 function showBmDetails(bookmark, showDetails){
 	currentDetails = bookmark;
 
-	var resToClear = document.getElementById("taxoSearchCon2");
-	while (resToClear.firstChild) {
-		resToClear.removeChild(resToClear.firstChild);
-	}
-
 	var bm;
 	for(var i = 0; i < userBookmarks.length; i++){
 		if(userBookmarks[i][0] == bookmark){
@@ -1211,6 +1192,7 @@ function showBmDetails(bookmark, showDetails){
 	image.removeAttribute('src');
 	
 	loadFilePreview(bm[0]);
+	loadSimilarBms(bm[0]);
 }
 
 function loadFilePreview(bookmark){
@@ -1220,7 +1202,7 @@ function loadFilePreview(bookmark){
 	}
 	else
 	{
-		var message = { fun: "getImagePreview", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
+		var message = { fun: "getFilePreview", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
 
 		makeAjaxCall(JSON.stringify(message)).then(function(result) 
 		{
@@ -1256,24 +1238,78 @@ function loadFilePreview(bookmark){
 }
 
 function showFilePreview(bookmark){
-	var image = document.getElementById('imagePreview');
+		var image = document.getElementById('imagePreview');
 		var textPreview = document.getElementById('textPreview');
+		var filePreviewDiv = document.getElementById('filePreviewDiv');
 		if(imagePreviewCache[bookmark] == "")
 		{
 			image.removeAttribute('src');
 			textPreview.textContent = "";
+			filePreviewDiv.hidden = true;
 			return;
 		}
 		else if(imagePreviewCache[bookmark].startsWith("data:image"))
 		{
 			textPreview.textContent = "";
 			image.src = imagePreviewCache[bookmark];
+			filePreviewDiv.hidden = false;
 		}
 		else{
 			image.removeAttribute('src');
 			textPreview.textContent = window.atob(imagePreviewCache[bookmark]);
+			filePreviewDiv.hidden = false;
 		}
 }
+
+function loadSimilarBms(bookmark){
+	var message2 = { fun: "getSimilarBms", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
+
+	makeAjaxCall(JSON.stringify(message2)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+
+		var myObj = JSON.parse(result);
+
+		addSimilarBms(myObj.result);
+		
+	});
+}
+
+function addSimilarBms(bms){
+	var myNode = document.getElementById("similarBmsCon");
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+
+	for (var i = 0; i < bms.length; i++) { 
+		var card = document.createElement("div");
+		card.style = "margin: 5px";					
+		card.classList.add("w3-card-2");
+		card.classList.add("w3-round");
+		card.classList.add("testhover");
+
+		var header = document.createElement("header");
+		header.classList.add("w3-container");
+		header.classList.add("w3-text-light-grey");
+		header.classList.add("unselectable");
+		card.appendChild(header);
+
+		var h1 = document.createElement("h5");
+		card.style.background ="#202225";
+		h1.style.margin ="5px";
+	
+		var node = document.createTextNode(bms[i]);
+		h1.classList.add("w3-text-light-grey");
+		h1.appendChild(node);
+		
+		var tmpOnClick = "showBmDetails('"+bms[i]+"',true)";
+		card.setAttribute("onclick",tmpOnClick);
+
+		header.appendChild(h1);
+		myNode.appendChild(card);
+	}	
+}
+
 //TREE
 
 function showTreeView(){
@@ -1570,7 +1606,7 @@ function addBmSearchResults(bms){
 	if(bmsLength > 0){
 		for (var i = 0; i < bms.length; i++) { 
 			var card = document.createElement("div");
-			card.style = "margin: 7px";					
+			card.style = "margin: 5px";					
 			card.classList.add("w3-card-2");
 			card.classList.add("w3-round");
 			card.classList.add("testhover");
@@ -1583,7 +1619,7 @@ function addBmSearchResults(bms){
 
 			var h1 = document.createElement("h5");
 			card.style.background ="#202225";
-			h1.style.margin ="7px";
+			h1.style.margin ="5px";
 		
 			var node = document.createTextNode(bms[i][0]);
 			h1.classList.add("w3-text-light-grey");
