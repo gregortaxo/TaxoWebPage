@@ -474,7 +474,7 @@ li:hover {
 									<div id="bmDetCon"></div>
 									<div class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 10px; background: #2f3136;">
 										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">File Preview</h5>
-										<img id= "imagePreview" width="200" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
+										<img id= "imagePreview" width="250" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
 										<div class="w3-text-light-grey" id= "textPreview"></div>
 									</div>
 									<div class="w3-card-2 inner w3-round" style="margin: 10px; background: #2f3136;" hidden>
@@ -1014,7 +1014,7 @@ function addUserBms(bms){
 				nodeDiv.classList.add("w3-text-light-grey");
 				h1.appendChild(nodeDiv);
 				var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
-				h1.setAttribute("onclick",tmpOnClick);
+				card.setAttribute("onclick",tmpOnClick);
 
 				header.appendChild(h1);
 
@@ -1261,17 +1261,17 @@ function showFilePreview(bookmark){
 		if(imagePreviewCache[bookmark] == "")
 		{
 			image.removeAttribute('src');
-			textPreview.innerHTML = "";
+			textPreview.textContent = "";
 			return;
 		}
 		else if(imagePreviewCache[bookmark].startsWith("data:image"))
 		{
-			textPreview.innerHTML = "";
+			textPreview.textContent = "";
 			image.src = imagePreviewCache[bookmark];
 		}
 		else{
 			image.removeAttribute('src');
-			textPreview.innerHTML = window.atob(imagePreviewCache[bookmark]);
+			textPreview.textContent = window.atob(imagePreviewCache[bookmark]);
 		}
 }
 //TREE
@@ -1590,7 +1590,7 @@ function addBmSearchResults(bms){
 			h1.appendChild(node);
 			
 			var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
-			h1.setAttribute("onclick",tmpOnClick);
+			card.setAttribute("onclick",tmpOnClick);
 
 			header.appendChild(h1);
 			myNode.appendChild(card);
