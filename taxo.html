@@ -470,17 +470,19 @@ li:hover {
 					<div id="bmDetails">
 						<div id="BmDetCard" class="w3-container w3-center w3-content"> 
 							<div class="outer">
+								<div class="inner">
 									<h4 class="w3-wide unselectable w3-center w3-round w3-text-light-grey">Bookmark Details</h4>
 									<div id="bmDetCon"></div>
-									<div id="filePreviewDiv" class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 10px; background: #2f3136;">
+									<div id="filePreviewDiv" class="w3-round w3-card-2" style="margin: 15px 7px; padding-top: 5px; padding-bottom: 10px; background: #2f3136;">
 										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">File Preview</h5>
 										<img id= "imagePreview" width="250" style="display: block; margin-left: auto; margin-right: auto; margin-top: 5px;"></img>
 										<div class="w3-text-light-grey" style="margin: 0px; padding-left: 5px; padding-right: 5px;" id= "textPreview"></div>
 									</div>
-									<div id="similarBmsDiv" class="w3-round w3-card-2" style="margin: 7px; padding-top: 5px; padding-bottom: 5px; background: #2f3136;">
-										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">Similar Bookmarks</h5>
+									<div id="similarBmsDiv" class="w3-round w3-card-2" style="margin: 15px 7px; padding-top: 5px; padding-bottom: 5px; background: #2f3136;">
+										<h5 class="w3-text-light-grey" style="margin: 0px; padding: 0px; font-weight: bold;">Related Bookmarks</h5>
 										<div id= "similarBmsCon"></div>
 									</div>
+								</div>
 							</div> 
 						</div>
 					</div>
@@ -552,6 +554,7 @@ var currentDetails = "";
 var taxoCache = {};
 var taxoCacheLoaded = {};
 var imagePreviewCache = {};
+var similarBmsCache = {};
 
 var contexts = [];
 var currentContext = 0;
@@ -1191,6 +1194,8 @@ function showBmDetails(bookmark, showDetails){
 	var image = document.getElementById('imagePreview');
 	image.removeAttribute('src');
 	
+	document.getElementById("similarBmsDiv").hidden = true;
+
 	loadFilePreview(bm[0]);
 	loadSimilarBms(bm[0]);
 }
@@ -1262,16 +1267,25 @@ function showFilePreview(bookmark){
 }
 
 function loadSimilarBms(bookmark){
-	var message2 = { fun: "getSimilarBms", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
-
-	makeAjaxCall(JSON.stringify(message2)).then(function(result) 
+	if(similarBmsCache[bookmark] != undefined)
 	{
-		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+		addSimilarBms(similarBmsCache[bookmark]);
+	}
+	else
+	{
+		var message2 = { fun: "getSimilarBms", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
 
-		var myObj = JSON.parse(result);
+		makeAjaxCall(JSON.stringify(message2)).then(function(result) 
+		{
+			if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
-		addSimilarBms(myObj.result);
-	});
+			var myObj = JSON.parse(result);
+
+			similarBmsCache[bookmark] = myObj.result;
+
+			addSimilarBms(myObj.result);
+		});
+	}
 }
 
 function addSimilarBms(bms){
@@ -1291,7 +1305,7 @@ function addSimilarBms(bms){
 
 	for (var i = 0; i < bms.length; i++) { 
 		var card = document.createElement("div");
-		card.style = "margin: 5px";					
+		card.style = "margin: 5px 15px";					
 		card.classList.add("w3-card-2");
 		card.classList.add("w3-round");
 		card.classList.add("testhover");
@@ -1771,7 +1785,6 @@ function addBmCont(fileName, fileData,fileSize,imagePreview){
 				showMessage("Bookmark was successfully saved");
 				showLoadingOverlay(false);
 				getBms();
-				bmTreeNeedsUpdate = true;
 			}
 		}
 	});
@@ -1870,6 +1883,7 @@ function removeBookmark(bmToDelete){
 		if(myObj.result == "bookmark_removed"){
 			showMessage("Bookmark deleted");
 			bmTreeNeedsUpdate = true;
+			similarBmsCache = {};
 		}
 		else{
 			showMessage(myObj.result);
@@ -1900,6 +1914,7 @@ function addTag(){
 
 		showLoadingOverlay(false);
 		bmTreeNeedsUpdate = true;
+		similarBmsCache = {};
 		getBms();
 		updateNavigation(event,currTaxoId);
 		showMenu(0);
