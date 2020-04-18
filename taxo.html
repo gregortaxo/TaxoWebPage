@@ -2268,13 +2268,14 @@ function setUpContext(contextToShow){
 			textDiv2.style.width = "10%";
 			cardForQuery.appendChild(textDiv2);
 
-			var para2 = document.createElement("h4");
+			var para2 = document.createElement("div");
 			para2.classList.add("unselectable");
 			var title = context[2][i][0];
 			var nodeTmp1 = document.createTextNode(title);
 			para2.classList.add("w3-text-light-grey");
 			para2.appendChild(nodeTmp1);
 			para2.style.margin = "0px";
+			para2.style.fontWeight = "bold";
 			textDiv.appendChild(para2);
 
 			var para3 = document.createElement("div");
