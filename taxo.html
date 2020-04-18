@@ -56,6 +56,14 @@ button:focus {
 	outline: none !important;
     border-color: #7289da;
 }
+button{
+	font-weight: bold; 
+	font-size: 12px;
+}
+select{
+	font-weight: bold; 
+	font-size: 12px;
+}
 textarea {
   border: 1px solid transparent;
   background-color: #f1f1f1;
@@ -380,8 +388,8 @@ li:hover {
 												</form>
 											</section>
 											<div style="padding: 1px; width:20%; margin-left: 1%;">
-												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #7289da"
-														onclick="searchBms()">Find Bookmark</button>
+												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 5px; background: #7289da"
+														onclick="searchBms()">Find Bookmarks</button>
 											</div>
 									</div>
 									<div class = "parent" style="margin: 10px 0px;">
@@ -410,8 +418,8 @@ li:hover {
 												</form>
 											</section>
 											<div style="padding: 1px; width:20%; margin-left: 1%;">
-												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 3px; background: #4f545c"
-														onclick="searchTaxo()">Find Concept</button>
+												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 5px; background: #4f545c"
+														onclick="searchTaxo()">Find Concepts</button>
 											</div>
 									</div>
 								</div>
@@ -494,7 +502,9 @@ li:hover {
 								<h4 class="w3-wide unselectable w3-center w3-text-light-grey">User Bookmarks</h4>
 								<div class="w3-center">
 									<button class="w3-button w3-text-light-grey w3-round" onclick="showMenu(3)"
-										style="background: #4f545c; margin-bottom: 10px; width: 200px;;">Add Bookmark</button>
+										style="background: #4f545c; margin-bottom: 10px;">Add Bookmark</button>
+										<button class="w3-button w3-text-light-grey w3-round" onclick="switchView(4)"
+										style="background: #4f545c; margin-bottom: 10px;">Tree</button>
 								</div>
 								<div id="bmsCon" class="inner"> </div>
 							</div> 
@@ -504,8 +514,6 @@ li:hover {
 			</div>
 			<div id="bmTreeView" hidden>
 				<h4 class="w3-wide unselectable; w3-text-light-grey">Bookmark Tree</h4>
-				<!-- <button class="w3-button w3-text-light-grey w3-round" onclick="showTreeView()"
-				style="background: #4f545c; margin-bottom: 10px; width: 200px;">Tree View</button> -->
 				<div  style="max-width: 1000px;  margin: auto;"  >
 					<ul id="myUL" style="text-align: left;"></ul>
 				</div>
@@ -519,7 +527,7 @@ li:hover {
 						<div align="left" style="color: #747880; font-weight: bold; ">Number Of User Bookmarks</div> 
 						<div align="left" class = "w3-text-light-grey" id="numOfBmLabel"></div>
 					</div>
-					<button align="right" class="w3-button w3-text-light-grey w3-round" onclick="reloadPage()" style="background: #7289da; height: 40px;">Log Out</button>
+					<button align="right" class="w3-button w3-text-light-grey w3-round" onclick="reloadPage()" style="background: #7289da; height: 32px;">Log Out</button>
 				</div>
 			</div>
 		</div>
@@ -580,6 +588,38 @@ function setUpPage(){
 	  event.preventDefault();
 	  if (event.keyCode === 13) {
 		logIn();
+	  }
+	});
+
+	var input2 = document.getElementById("newContextInput");
+	input2.addEventListener("keyup", function(event) {
+	  event.preventDefault();
+	  if (event.keyCode === 13) {
+		addNewContext();
+	  }
+	});
+
+	var input3 = document.getElementById("newQueryNameInput");
+	input3.addEventListener("keyup", function(event) {
+	  event.preventDefault();
+	  if (event.keyCode === 13) {
+		saveQueryToContext();
+	  }
+	});
+
+	var input4 = document.getElementById("BmSearchInput");
+	input4.addEventListener("keyup", function(event) {
+	  event.preventDefault();
+	  if (event.keyCode === 13) {
+		searchBms();
+	  }
+	});
+
+	var input5 = document.getElementById("ConceptSearchInput");
+	input5.addEventListener("keyup", function(event) {
+	  event.preventDefault();
+	  if (event.keyCode === 13) {
+		searchTaxo();
 	  }
 	});
 }
@@ -681,12 +721,26 @@ function showMenu(menu){
 	];
 	
 	for(var i = 0; i < menus.length; i++){
-		if(i == menu - 1)
+		var menuNum = menu - 1;
+		if(i == menuNum)
 		{
 			menus[i].hidden = false;
 		}
 		else{
 			menus[i].hidden = true;
+		}
+
+		if(menuNum == 0){
+			document.getElementById("newContextInput").focus();
+		}
+		else if(menuNum == 1){
+			document.getElementById("newQueryNameInput").focus();
+		}
+		else if(menuNum == 2){
+			document.getElementById("newBmName").focus();
+		}
+		else if(menuNum == 4){
+			document.getElementById("bmName").focus();
 		}
 	}
 }
@@ -1450,8 +1504,20 @@ function searchTaxo(){
 	showLoadingOverlay(true);
 	
 	var currSearchWord = document.getElementById("ConceptSearchInput").value.toLowerCase().trim();
+	var contextConcepts = "";
 	
-	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord) };
+	if(contexts.length > 0){
+		var count = contexts[currentContext][1].length;
+		for(var i = 0; i < count; i++){
+			contextConcepts += contexts[currentContext][1][i][0]
+
+			if(i < (count-1)){
+				contextConcepts += ",";
+			}
+		}
+	}
+	
+	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord), contextConcepts: escape(contextConcepts) };
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1580,6 +1646,21 @@ function addSearchResults(results){
 function searchBms(){
 	showLoadingOverlay(true);
 	var query = document.getElementById("BmSearchInput").value.toLowerCase().trim();
+
+	if(query == ""){
+		if(contexts.length > 0)
+		{
+			var count = contexts[currentContext][1].length;
+			for(var i = 0; i < count; i++){
+				query += "["+contexts[currentContext][1][i][1].split(",")[0]+","+contexts[currentContext][1][i][0]+"]"
+
+				if(i < (count-1)){
+					query += " | ";
+				}
+			}
+			document.getElementById("BmSearchInput").value = query;
+		}
+	}
 
 	var childrenDrop = document.getElementById("ChildrenDropdown").value;
 	var childrenValue = "False";
