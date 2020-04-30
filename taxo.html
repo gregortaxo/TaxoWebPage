@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<script src="http://code.jquery.com/jquery-git2.js"></script>
+<script src="https://code.jquery.com/jquery-git2.js"></script>
 <style>
 .unselectable {
     -webkit-touch-callout: none;
@@ -536,11 +536,14 @@ li:hover {
 
 <script src="FileSaver.js"></script>
 <script>
-//var serverAddress = "http://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoForward.php";
-//var taxoIndexAddress = "http://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoIndex.txt";
+//var serverAddress = "https://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoForward.php";
+//var taxoIndexAddress = "https://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoIndex.txt";
 
-//var serverAddress = "http://192.168.1.8/taxoForwardLocal.php";
-//var taxoIndexAddress = "http://192.168.1.8/taxoIndex.txt";
+// var serverAddress = "http://89.143.68.172/taxoForwardLocal.php";
+// var taxoIndexAddress = "http://89.143.68.172/taxoIndex.txt";
+
+// var serverAddress = "http://192.168.1.11/taxoForwardLocal.php";
+// var taxoIndexAddress = "http://192.168.1.11/taxoIndex.txt";
 
 var serverAddress = "http://localhost/taxoForwardLocal.php";
 var taxoIndexAddress = "http://localhost/taxoIndex.txt";
@@ -575,6 +578,13 @@ var firstLoadDoNotShowTaxoNav = true;
 
 var bmTreeNeedsUpdate = true;
 
+var colDarkest = "#202225";
+var colDarker = "#2f3136";
+var colBackg = "#36393f";
+var colButton = "#4f545c";
+var colBlueAcc = "#7289da";
+var colGreenAcc = "#43b582";
+
 function showLoadingOverlay(value){
 	document.getElementById("overlayDiv").hidden = !value;
 }
@@ -583,43 +593,20 @@ function setUpPage(){
 	navigationBarResize();
 	loadTaxoIndex();
 
-	var input = document.getElementById("PassInput");
-	input.addEventListener("keyup", function(event) {
-	  event.preventDefault();
-	  if (event.keyCode === 13) {
-		logIn();
-	  }
-	});
+	addEnterKeyListener("newBmName", addBm);
+	addEnterKeyListener("newBmUrl", addBm);
+	addEnterKeyListener("ConceptSearchInput", searchTaxo);
+	addEnterKeyListener("BmSearchInput", searchBms);
+	addEnterKeyListener("newQueryNameInput", saveQueryToContext);
+	addEnterKeyListener("newContextInput", addNewContext);
+	addEnterKeyListener("PassInput", logIn);
+}
 
-	var input2 = document.getElementById("newContextInput");
-	input2.addEventListener("keyup", function(event) {
+function addEnterKeyListener(element, enterKeyCallback){
+	document.getElementById(element).addEventListener("keyup", function(event) {
 	  event.preventDefault();
 	  if (event.keyCode === 13) {
-		addNewContext();
-	  }
-	});
-
-	var input3 = document.getElementById("newQueryNameInput");
-	input3.addEventListener("keyup", function(event) {
-	  event.preventDefault();
-	  if (event.keyCode === 13) {
-		saveQueryToContext();
-	  }
-	});
-
-	var input4 = document.getElementById("BmSearchInput");
-	input4.addEventListener("keyup", function(event) {
-	  event.preventDefault();
-	  if (event.keyCode === 13) {
-		searchBms();
-	  }
-	});
-
-	var input5 = document.getElementById("ConceptSearchInput");
-	input5.addEventListener("keyup", function(event) {
-	  event.preventDefault();
-	  if (event.keyCode === 13) {
-		searchTaxo();
+		enterKeyCallback();
 	  }
 	});
 }
@@ -687,7 +674,7 @@ function switchView(view){
 		if(i == view - 1)
 		{
 			views[i].hidden = false;
-			buttons[i].style.background = "#7289da";
+			buttons[i].style.background = colBlueAcc;
 
 			if(i == 3){
 				showTreeView()
@@ -695,7 +682,7 @@ function switchView(view){
 		}
 		else{
 			views[i].hidden = true;
-			buttons[i].style.background = "#36393f";
+			buttons[i].style.background = colBackg;
 		}
 	}
 }
@@ -924,11 +911,11 @@ function addNavResults(results){
 				card.style.padding = "0px";
 
 				if(j == 0){
-					card.style.background = "#7289da";
+					card.style.background = colBlueAcc;
 					card.style.paddingBottom = "10px";
 				}
 				else{
-					card.style.background = "#2f3136";
+					card.style.background = colDarker;
 				}
 			
 				var title = tmpResult[1].replace(/,/g, ", ");
@@ -959,7 +946,7 @@ function addNavResults(results){
 							para2.classList.add("testhover");
 							para2.classList.add("w3-text-light-grey");
 							para2.classList.add("w3-round");
-							para2.style.background = "#36393f";
+							para2.style.background = colBackg;
 							para2.style.margin = "5px";
 							var node2 = document.createTextNode(bmsDict[currTaxoId][y]);
 						
@@ -1036,7 +1023,7 @@ function addUserBms(bms){
 		for (var i = 0; i < bms.length; i++) { 
 				var card = document.createElement("div");
 				card.style.margin = "7px";
-				card.style.background = "#2f3136";
+				card.style.background = colDarker;
 				card.classList.add("w3-round");
 				card.classList.add("w3-card-2");
 				card.classList.add("testhover");
@@ -1141,7 +1128,7 @@ function showBmDetails(bookmark, showDetails){
 	card.style.margin = "7px";
 	card.style.padding = "5px";
 	card.classList.add("w3-round");
-	card.style.background = "#2f3136";
+	card.style.background = colDarker;
 	card.classList.add("w3-card-2")
 
 	var header = document.createElement("header");
@@ -1163,7 +1150,7 @@ function showBmDetails(bookmark, showDetails){
 	var a = document.createElement("a");
 	var aDiv = document.createElement("div");
 	aDiv.innerHTML = (bm[1]);
-	a.style.color = "#7289da";
+	a.style.color = colBlueAcc;
 	a.target="_blank"
 	aDiv.style = "width: 100%; text-overflow: ellipsis; white-space: nowrap;overflow: hidden; margin-bottom: 5px;";
 	a.appendChild(aDiv);
@@ -1185,7 +1172,7 @@ function showBmDetails(bookmark, showDetails){
 	btn2.classList.add("w3-text-light-grey");
 	btn2.style.marginTop = "5px";
 	btn2.style.marginRight = "5px";
-	btn2.style.background = "#7289da";
+	btn2.style.background = colBlueAcc;
 	var tmp3 = bm[0];
 	tmp3 = "getBookmarkFile('"+tmp3+"')";
 	btn2.setAttribute("onclick",tmp3);
@@ -1198,7 +1185,7 @@ function showBmDetails(bookmark, showDetails){
 	btn.classList.add("w3-round");
 	btn.classList.add("w3-text-light-grey");
 	btn.style.marginTop = "5px";
-	btn.style.background = "#4f545c";
+	btn.style.background = colButton;
 	var tmp2 = bm[0];
 	tmp2 = "removeBookmark('"+tmp2+"')";
 	btn.setAttribute("onclick",tmp2);
@@ -1217,7 +1204,7 @@ function showBmDetails(bookmark, showDetails){
 			para2.classList.add("w3-card-2");
 			para2.style.margin = "10px";
 			para2.style.padding = "3px";
-			para2.style.background = "#4f545c";
+			para2.style.background = colButton;
 			para2.classList.add("unselectable");
 			para2.classList.add("testhoverGray");
 			para2.classList.add("w3-round");
@@ -1371,7 +1358,7 @@ function addSimilarBms(bms){
 		card.appendChild(header);
 
 		var h1 = document.createElement("h5");
-		card.style.background ="#202225";
+		card.style.background =colDarkest;
 		h1.style.margin ="5px";
 	
 		var node = document.createTextNode(bms[i]);
@@ -1443,7 +1430,7 @@ function populateTreeViewHelper(parent, children){
 	card.style.padding = "1px 3px";
 	//card.classList.add("w3-card-2");
 	card.classList.add("w3-round");
-	card.style.background = "#2f3136";
+	card.style.background = colDarker;
 
 
 	var header = document.createElement("span");
@@ -1463,8 +1450,8 @@ function populateTreeViewHelper(parent, children){
 	card2.style.padding = "1px";
 	card2.classList.add("w3-round");
 	card2.classList.add("nested");
-	card2.style.background = "#202225";
-	card2.style.background = "#2f3136";
+	card2.style.background = colDarkest;
+	card2.style.background = colDarker;
 	card.appendChild(card2);
 
 	for (var i = 0; i < children[0][2].length; i++) { 
@@ -1473,7 +1460,7 @@ function populateTreeViewHelper(parent, children){
 		card3.style.padding = "1px 3px";
 		card3.classList.add("w3-card-2");
 		card3.classList.add("w3-round");
-		card3.style.background = "#202225";
+		card3.style.background = colDarkest;
 		card3.classList.add("testhover");
 
 
@@ -1561,7 +1548,7 @@ function addSearchResults(results){
 				card.classList.add("w3-card-2");
 				card.classList.add("w3-round");
 				card.classList.add("parent");
-				card.style.background = "#4f545c";
+				card.style.background = colButton;
 				card.classList.add("testhoverGray");
 
 				var titleSplit = results[i][1].split(",");
@@ -1574,7 +1561,7 @@ function addSearchResults(results){
 				hoverArea.classList.add("w3-center");
 				hoverArea.classList.add("testhover");
 				hoverArea.classList.add("w3-round");
-				hoverArea.style.background = "#36393f";
+				hoverArea.style.background = colBackg;
 				hoverArea.style.padding = "5px";
 				card.appendChild(hoverArea);
 
@@ -1615,7 +1602,7 @@ function addSearchResults(results){
 				btn1.classList.add("w3-round");
 				btn1.classList.add("w3-text-light-grey");
 				btn1.style.margin = "0px 0px 0px 5px";
-				btn1.style.background ="#4f545c";
+				btn1.style.background =colButton;
 				var tmp3 = "";
 				tmp3 = results[i][0];
 				tmp3 = "updateNavigation(event,'"+tmp3+"')";
@@ -1629,7 +1616,7 @@ function addSearchResults(results){
 				btn2.classList.add("w3-round");
 				btn2.classList.add("w3-text-light-grey");
 				btn2.style.margin = "0px 0px 0px 5px";
-				btn2.style.background ="#43b582";
+				btn2.style.background =colGreenAcc;
 				var tmp2 = results[i][1];
 				tmp2 = "addTaxoTagToContext(event,'"+results[i][0]+"','"+tmp2+"')";
 				btn2.setAttribute("onclick",tmp2);
@@ -1721,7 +1708,7 @@ function addBmSearchResults(bms){
 			card.appendChild(header);
 
 			var h1 = document.createElement("h5");
-			card.style.background ="#202225";
+			card.style.background =colDarkest;
 			h1.style.margin ="5px";
 		
 			var node = document.createTextNode(bms[i][0]);
@@ -2086,14 +2073,14 @@ function setUpContext(contextToShow){
 		var card = document.createElement("div");
 		card.classList.add("w3-card-2");
 		card.classList.add("w3-round");
-		card.style.background = "#2f3136";
+		card.style.background = colDarker;
 		card.style.padding = "5px";
 	
 		var tableDiv = document.createElement("div");
 		tableDiv.classList.add("w3-round");
 		tableDiv.style.display = "table";
 		tableDiv.style.width =  "100%";
-		//tableDiv.style.background = "#202225";
+		//tableDiv.style.background = colDarkest;
 		card.appendChild(tableDiv);
 
 		var leftCol = document.createElement("div");
@@ -2127,7 +2114,7 @@ function setUpContext(contextToShow){
 		deleteBtn.classList.add("w3-button");
 		deleteBtn.classList.add("w3-round");
 		deleteBtn.classList.add("w3-text-light-grey");
-		deleteBtn.style.background = "#4f545c";
+		deleteBtn.style.background = colButton;
 		var tmpDelete = context[0];
 		tmpDelete = "deleteContext('"+tmpDelete+"')";
 		deleteBtn.setAttribute("onclick",tmpDelete);
@@ -2148,7 +2135,7 @@ function setUpContext(contextToShow){
 			cardForTag.classList.add("w3-card-2");
 			cardForTag.style.margin = "10px";
 			cardForTag.style.padding = "3px";
-			cardForTag.style.background = "#4f545c";
+			cardForTag.style.background = colButton;
 			cardForTag.classList.add("w3-round");
 			cardForTag.classList.add("testhoverGray");
 			cardForTag.classList.add("parent");
@@ -2159,7 +2146,7 @@ function setUpContext(contextToShow){
 			hoverArea.classList.add("w3-center");
 			hoverArea.classList.add("w3-round");
 			hoverArea.classList.add("testhover");
-			hoverArea.style.background = "#36393f";
+			hoverArea.style.background = colBackg;
 			hoverArea.style.margin = "0px";
 			cardForTag.appendChild(hoverArea);
 
@@ -2203,7 +2190,7 @@ function setUpContext(contextToShow){
 			btn2.classList.add("w3-round");
 			btn2.classList.add("w3-text-light-grey");
 			btn2.style.margin = "5px";
-			btn2.style.background = "#43b582";
+			btn2.style.background = colGreenAcc;
 			var tmp2 = context[1][i][0];
 			tmp2 = "updateNavigation(event,'"+tmp2+"')";
 			btn2.setAttribute("onclick",tmp2);
@@ -2216,7 +2203,7 @@ function setUpContext(contextToShow){
 			btn3.classList.add("w3-round");
 			btn3.classList.add("w3-text-light-grey");
 			btn3.style.margin = "5px";
-			btn3.style.background = "#4f545c";
+			btn3.style.background = colButton;
 			var tmp3 = "removeConceptFromContext(event,'"+context[1][i][0]+"')";
 			btn3.setAttribute("onclick",tmp3);
 			butPara.appendChild(btn3);
@@ -2237,7 +2224,7 @@ function setUpContext(contextToShow){
 			var cardForQuery = document.createElement("div");
 			cardForQuery.classList.add("w3-card-2");
 			cardForQuery.style = "margin: 10px";
-			cardForQuery.style.background = "#36393f";
+			cardForQuery.style.background = colBackg;
 			cardForQuery.classList.add("w3-round");
 			cardForQuery.classList.add("parent");
 			cardForQuery.classList.add("testhoverGray");
@@ -2253,7 +2240,7 @@ function setUpContext(contextToShow){
 			hoverArea.classList.add("w3-center");
 			hoverArea.classList.add("w3-round");
 			hoverArea.classList.add("testhover");
-			hoverArea.style.background = "#4f545c";
+			hoverArea.style.background = colButton;
 			hoverArea.style.margin = "5px";
 			cardForQuery.appendChild(hoverArea);
 
@@ -2299,7 +2286,7 @@ function setUpContext(contextToShow){
 			btn2.classList.add("w3-round");
 			btn2.classList.add("w3-text-light-grey");
 			btn2.style.margin = "5px";
-			btn2.style.background = "#43b582";
+			btn2.style.background = colGreenAcc;
 			var tmp2 = "updateQueryInContext(event,'"+context[2][i][0]+"')";
 			btn2.setAttribute("onclick",tmp2);
 			butPara.appendChild(btn2);
@@ -2311,7 +2298,7 @@ function setUpContext(contextToShow){
 			btn3.classList.add("w3-round");
 			btn3.classList.add("w3-text-light-grey");
 			btn3.style.margin = "5px";
-			btn3.style.background = "#4f545c";
+			btn3.style.background = colButton;
 			var tmp3 = "deleteQueryFromContext(event,'"+context[2][i][0]+"')";
 			btn3.setAttribute("onclick",tmp3);
 			butPara.appendChild(btn3);
@@ -2524,9 +2511,9 @@ function autocomplete(inp, arr, enterKeyCallback) {
 		  for (i = 0; i < arr.length; i++) {
 			if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
 			  b = document.createElement("DIV");
-			  b.style.background = "#202225";
-			  b.style.color = "#7289da";
-			  b.style.borderColor = "#4f545c";
+			  b.style.background = colDarkest;
+			  b.style.color = colBlueAcc;
+			  b.style.borderColor = colButton;
 			  b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
 			  b.innerHTML += arr[i].substr(val.length);
 			  b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
