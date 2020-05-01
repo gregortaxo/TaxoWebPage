@@ -551,62 +551,33 @@ var taxoIndexAddress = "http://localhost/taxoIndex.txt";
 
 var windowWidth = window.outerWidth;
 
-var currUsername;
-var currPassword;
+var currUsername, currPassword, currTaxoId, currTaxoName;
 
-var currTaxoId;
-var currTaxoName;
+var userBookmarks = [], bmsDict = {}, currBookmarks = [], taxoIndex = [], currentDetails = "";
 
-var userBookmarks = [];
-var bmsDict = {};
-var currBookmarks = [];
-var taxoIndex = [];
-var currentDetails = "";
+var taxoCache = {}, taxoCacheLoaded = {}, imagePreviewCache = {}, similarBmsCache = {};
 
-var taxoCache = {};
-var taxoCacheLoaded = {};
-var imagePreviewCache = {};
-var similarBmsCache = {};
+var contexts = [], currentContext = 0;
 
-var contexts = [];
-var currentContext = 0;
+var sendInChunksbookmark = "", sendInChunksdataToSend = "", sendInChunksiter = "";
 
-var sendInChunksbookmark = "";
-var sendInChunksdataToSend = "";
-var sendInChunksiter = "";
+var firstLoadDoNotShowTaxoNav = true, bmTreeNeedsUpdate = true;
 
-var firstLoadDoNotShowTaxoNav = true;
-var bmTreeNeedsUpdate = true;
+var darkestShadeColor = "#202225", darkerShadeColor = "#2f3136", backgroundColor = "#36393f",
+    buttonColor = "#4f545c", blueAccentColor = "#7289da", greenAccentColor = "#43b582";
 
-var darkestShadeColor = "#202225";
-var darkerShadeColor = "#2f3136";
-var backgroundColor = "#36393f";
-var buttonColor = "#4f545c";
-var blueAccentColor = "#7289da";
-var greenAccentColor = "#43b582";
+var ul = getById("bmListMenu");
 
-var ul = document.getElementById("bmListMenu");
+var views = [getById("taxoNavCard"),getById("searchSection"),getById("bmSectionWrap"),getById("bmTreeView"),getById("infoView")];
 
-var views = [
-		document.getElementById("taxoNavCard"),
-		document.getElementById("searchSection"),
-		document.getElementById("bmSectionWrap"),
-		document.getElementById("bmTreeView"),
-		document.getElementById("infoView")
-	];
+var buttons = [getById("NavigationButton"),getById("SearchButton"),getById("BookmarkListButton"),getById("BookmarkTreeButton"),getById("InfoButton")];
 
-var buttons = [
-		document.getElementById("NavigationButton"),
-		document.getElementById("SearchButton"),
-		document.getElementById("BookmarkListButton"),
-		document.getElementById("BookmarkTreeButton"),
-		document.getElementById("InfoButton")
-	];
+var menus = [getById("contextMenu"),getById("addNewQueryMenu"),getById("addNewBmMenu"),getById("infoBox"),getById("connectBmToConceptMenu")];
 //#endregion
 
-//#region Page navigation & setup
+//#region page navigation & setup
 function showLoadingOverlay(value){
-	document.getElementById("overlayDiv").hidden = !value;
+	getById("overlayDiv").hidden = !value;
 }
 
 function setUpPage(){
@@ -623,13 +594,13 @@ function setUpPage(){
 
 	ul.onclick = function(event) {
 		var target = getEventTarget(event);
-		document.getElementById("addConToBmInput").value = target.innerHTML;
+		getById("addConToBmInput").value = target.innerHTML;
 		filter();
 	};
 }
 
 function addEnterKeyListener(element, enterKeyCallback){
-	document.getElementById(element).addEventListener("keyup", function(event) {
+	getById(element).addEventListener("keyup", function(event) {
 	  event.preventDefault();
 	  if (event.keyCode === 13) {
 		enterKeyCallback();
@@ -644,12 +615,12 @@ function handleSize(){
 
 function navigationBarResize(){
 	if(windowWidth < 800){
-		document.getElementById("navigationVertical").hidden = true;
-		document.getElementById("navigationHorizontal").hidden = false;
+		getById("navigationVertical").hidden = true;
+		getById("navigationHorizontal").hidden = false;
 	}
 	else{
-		document.getElementById("navigationVertical").hidden = false;
-		document.getElementById("navigationHorizontal").hidden = true;
+		getById("navigationVertical").hidden = false;
+		getById("navigationHorizontal").hidden = true;
 	}
 }
 
@@ -658,8 +629,8 @@ function loadTaxoIndex() {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
      	taxoIndex = this.responseText.split('\n');
-	 	autocomplete(document.getElementById("ConceptSearchInput"), taxoIndex, searchTaxo);
-		autocomplete(document.getElementById("BmSearchInput"), taxoIndex, searchBms);
+	 	autocomplete(getById("ConceptSearchInput"), taxoIndex, searchTaxo);
+		autocomplete(getById("BmSearchInput"), taxoIndex, searchBms);
     }
   };
   xhttp.open("GET", taxoIndexAddress, true);
@@ -669,26 +640,23 @@ function loadTaxoIndex() {
 async function loggedIn(){
 	switchView(2);
 
-	document.getElementById("userNameLabel").innerHTML = currUsername;
+	getById("userNameLabel").innerHTML = currUsername;
 
+	updateNavigation(event,"00001740");
 	await getBms();
-	await loadNavigation();
 	await getContexts(0);
 	
-	document.getElementById("taxoSection").hidden = false;
-	document.getElementById("loginCard").hidden = true;
+	getById("taxoSection").hidden = false;
+	getById("loginCard").hidden = true;
 }
 
 function switchView(view){
 	for(var i = 0; i < views.length; i++){
-		if(i == view - 1)
-		{
+		if(i == view - 1){
 			views[i].hidden = false;
 			buttons[i].style.background = blueAccentColor;
 
-			if(i == 3){
-				showTreeView()
-			}
+			if(i == 3){	showTreeView() }
 		}
 		else{
 			views[i].hidden = true;
@@ -698,29 +666,20 @@ function switchView(view){
 }
 
 function showMenu(menu){
-	var menuDiv = document.getElementById("MenuDiv");
+	var menuDiv = getById("MenuDiv");
 
 	if(menu == 0){
-		document.getElementById("infoBoxText").innerHTML = "";
+		getById("infoBoxText").innerHTML = "";
 		menuDiv.hidden = true;
 		return;	
 	}
 	else{
 		menuDiv.hidden = false;
 	}
-
-	var menus = [
-		document.getElementById("contextMenu"),
-		document.getElementById("addNewQueryMenu"),
-		document.getElementById("addNewBmMenu"),
-		document.getElementById("infoBox"),
-		document.getElementById("connectBmToConceptMenu")
-	];
 	
 	for(var i = 0; i < menus.length; i++){
 		var menuNum = menu - 1;
-		if(i == menuNum)
-		{
+		if(i == menuNum){
 			menus[i].hidden = false;
 		}
 		else{
@@ -728,28 +687,28 @@ function showMenu(menu){
 		}
 
 		if(menuNum == 0){
-			document.getElementById("newContextInput").focus();
+			getById("newContextInput").focus();
 		}
 		else if(menuNum == 1){
-			document.getElementById("newQueryNameInput").focus();
+			getById("newQueryNameInput").focus();
 		}
 		else if(menuNum == 2){
-			document.getElementById("newBmName").focus();
+			getById("newBmName").focus();
 		}
 		else if(menuNum == 4){
-			document.getElementById("addConToBmInput").focus();
+			getById("addConToBmInput").focus();
 		}
 	}
 }
 
 function showMessage(message){
-	document.getElementById("infoBoxText").innerHTML = message;
+	getById("infoBoxText").innerHTML = message;
 	showMenu(4);
 }
 
 function logIn(){
-	currUsername = document.getElementById("UsernameInput").value;
-	currPassword = document.getElementById("PassInput").value;
+	currUsername = getById("UsernameInput").value;
+	currPassword = getById("PassInput").value;
 	
 	var message = { fun: "login", username: currUsername, password: currPassword };
 
@@ -758,7 +717,7 @@ function logIn(){
 		if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
 		var myObj = JSON.parse(result);
-		document.getElementById("responseField").innerHTML = myObj.result;
+		getById("responseField").innerHTML = myObj.result;
 		
 		if(myObj.result == "success"){
 			loggedIn();
@@ -767,23 +726,19 @@ function logIn(){
 }
 
 function registerUser(){
-	var message = { fun: "regUser", username: document.getElementById("UsernameInput").value, password: document.getElementById("PassInput").value };
+	var message = { fun: "regUser", username: getById("UsernameInput").value, password: getById("PassInput").value };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
 		if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
 		var myObj = JSON.parse(result);
-		document.getElementById("responseField").innerHTML = myObj.result;
+		getById("responseField").innerHTML = myObj.result;
 	});
 }
 //#endregion
 
 //#region taxo navigation
-function loadNavigation(){
-	 updateNavigation(event,"00001740");
-}
-
 function updateNavigation(ev,taxoWord){
 	if(ev != undefined){
 		ev.stopPropagation();
@@ -793,24 +748,20 @@ function updateNavigation(ev,taxoWord){
 
 	var taxoCached = false;
 	
-	if(	taxoCacheLoaded[taxoWord] != undefined)
-	{
+	if(	taxoCacheLoaded[taxoWord] != undefined){
 		taxoCached = true;
 	}
 
 	var taxoCachedPartially = false;
 
-	if(taxoCache[taxoWord] != undefined)
-	{
+	if(taxoCache[taxoWord] != undefined){
 		addNavResults(taxoCache[taxoWord]);
 		switchView(1);
 
-		if(taxoCached){
-			return;
-		}
+		if(taxoCached){	return;	}
 
 		taxoCachedPartially = true;
-	}	
+	}
 
 	var message = { fun: "searchTaxo", username: currUsername, password: currPassword, word: taxoWord };
 
@@ -844,124 +795,257 @@ function addNavResults(results){
 		var connectedThings;
 		
 		if(j == 0){
-			myNode = document.getElementById("taxoNavConWord"); 
-			connectedThings = document.getElementById("ConnectedThings"); 	
+			myNode = getById("taxoNavConWord"); 
+			connectedThings = getById("ConnectedThings"); 	
 		}
 		else if(j == 1){
-			myNode = document.getElementById("taxoNavConParents");
+			myNode = getById("taxoNavConParents");
 		}
 		else{
-			myNode = document.getElementById("taxoNavConChildren");
+			myNode = getById("taxoNavConChildren");
 		}
 		
 		removeChildren(myNode);
 		
-		if(results[j][1].length > 0){
-			var countTmp;
+		if(results[j][1].length <= 0){
+			continue;
+		}
+
+		var countTmp;
+		
+		if(j == 0){ countTmp = 1; }
+		else{ countTmp = results[j][1].length; }
+		
+		for (var i = 0; i < countTmp ; i++) { 
+			var tmpResult
 			
-			if(j == 0){ countTmp = 1; }
-			else{ countTmp = results[j][1].length; }
-			
-			for (var i = 0; i < countTmp ; i++) { 
-				var tmpResult
-				
-				if(j == 0)
-				{
-					tmpResult = results[j][1]; 
-					currTaxoId = tmpResult[0];
-					currTaxoName = tmpResult[1];
-				}
-				else { tmpResult= results[j][1][i];}
-				
-				if (tmpResult[1] == undefined){
-					break;
-				}
-				
-				var card = makeCardDiv("7px 5px", "0px", darkerShadeColor);
-				var textDiv = document.createElement("div");
-
-				if(j != 0){
-					card.classList.add("testhover");
-					var tmp = "";
-					tmp = tmpResult[0];
-					tmp = "updateNavigation(event,'"+tmp+"')";
-					card.setAttribute("onclick",tmp);
-				}
-
-				var header = document.createElement("header");
-				header.classList.add("w3-container");
-				card.appendChild(header);
-				var h1 = document.createElement("h4");
-				
-				if(j!= 0){
-					var h1 = document.createElement("h5");
-				}
-				
-				h1.style.margin = "5px 0px";
-				h1.classList.add("w3-text-light-grey");
-
-				if(j != 0){
-					header.classList.add("unselectable");
-				}
-
-				if(j == 0){
-					card.style.background = blueAccentColor;
-					card.style.paddingBottom = "10px";
-				}
-			
-				var title = tmpResult[1].replace(/,/g, ", ");
-				var node = document.createTextNode(title);
-				h1.appendChild(node);
-				h1.classList.add("w3-text-black");
-				header.appendChild(h1);
-				
-				if(j == 0){ 
-					var para = document.createElement("p");
-					var text = document.createTextNode(tmpResult[3]);
-					para.appendChild(text);
-					//para.classList.add("unselectable");
-					para.setAttribute("style", "margin: 5px;");
-					para.classList.add("w3-text-light-grey");
-					textDiv.appendChild(para);
-
-					if(bmsDict[currTaxoId] != undefined){
-						var connectedThingsCon = document.getElementById("ConnectedThingsCon");
-						removeChildren(connectedThingsCon);
-
-						for(var y = 0; y < bmsDict[currTaxoId].length; y++){		
-							var para2 = document.createElement("h5");
-							para2.classList.add("unselectable");
-							para2.classList.add("testhover");
-							para2.classList.add("w3-text-light-grey");
-							para2.classList.add("w3-round");
-							para2.style.background = backgroundColor;
-							para2.style.margin = "5px";
-							var node2 = document.createTextNode(bmsDict[currTaxoId][y]);
-						
-							var tmp = "showBmDetails('"+bmsDict[currTaxoId][y]+"',true)";
-							para2.setAttribute("onclick",tmp);
-
-							para2.appendChild(node2);
-
-							connectedThingsCon.appendChild(para2);
-						}
-						
-						connectedThings.hidden = false;
-					}
-					else{
-						connectedThings.hidden = true;
-					}
-				}
-
-				card.appendChild(textDiv);
-				
-				myNode.appendChild(card);
+			if(j == 0)
+			{
+				tmpResult = results[j][1]; 
+				currTaxoId = tmpResult[0];
+				currTaxoName = tmpResult[1];
 			}
-		}	
+			else { tmpResult= results[j][1][i]; }
+			
+			if (tmpResult[1] == undefined){
+				break;
+			}
+			
+			var card = makeDiv("div", ["w3-card-2","w3-round"], "7px 5px", "0px", darkerShadeColor);
+			var header = makeDiv("header", ["w3-container"]);
+			var h1 = makeDiv("h5",["w3-text-light-grey", "w3-text-black"],"5px 0px");
+			h1.appendChild(document.createTextNode(tmpResult[1].replace(/,/g, ", ")));
+			header.appendChild(h1);
+			card.appendChild(header);		
+
+			if(j != 0) {
+				card.classList.add("testhover");
+				card.setAttribute("onclick","updateNavigation(event,'"+tmpResult[0]+"')");
+				header.classList.add("unselectable");
+			}
+			else {
+				card.style.background = blueAccentColor;
+				card.style.paddingBottom = "10px";
+			}			
+			
+			if(j == 0){
+				var textDiv = makeDiv("div");
+				var para = makeDiv("p",["w3-text-light-grey"],"5px");
+				para.appendChild(document.createTextNode(tmpResult[3]));
+				textDiv.appendChild(para);
+				card.appendChild(textDiv);
+
+				if(bmsDict[currTaxoId] != undefined){
+					var connectedBmsCon = getById("ConnectedThingsCon");
+					removeChildren(connectedBmsCon);
+
+					for(var y = 0; y < bmsDict[currTaxoId].length; y++){		
+						var connectedBm = makeDiv("h5", ["unselectable","testhover","w3-text-light-grey","w3-round"],"5px",undefined,backgroundColor);
+						connectedBm.appendChild(document.createTextNode(bmsDict[currTaxoId][y]));
+						connectedBm.setAttribute("onclick","showBmDetails('"+bmsDict[currTaxoId][y]+"',true)");
+						connectedBmsCon.appendChild(connectedBm);
+					}
+					
+					connectedThings.hidden = false;
+				}
+				else{
+					connectedThings.hidden = true;
+				}
+			}
+
+			myNode.appendChild(card);
+		}
 	}
 	showLoadingOverlay(false);
 }
+//#endregion
 
+//#region taxo search
+function searchTaxo(){
+	showLoadingOverlay(true);
+	
+	var currSearchWord = getById("ConceptSearchInput").value.toLowerCase().trim();
+	var contextConcepts = "";
+	
+	if(contexts.length > 0){
+		var count = contexts[currentContext][1].length;
+		for(var i = 0; i < count; i++){
+			contextConcepts += contexts[currentContext][1][i][0]
+
+			if(i < (count-1)){
+				contextConcepts += ",";
+			}
+		}
+	}
+	
+	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord), contextConcepts: escape(contextConcepts) };
+
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+		
+		showLoadingOverlay(false);
+		addSearchResults(myObj.result);
+	});
+}
+
+function addSearchResults(results){
+	var myNode = getById("taxoSearchCon");
+	removeChildren(myNode);
+
+	var bmsNode = getById("bmSearchCon");
+	removeChildren(bmsNode);
+
+	var resultsLength = 0;
+
+	if(results != undefined){
+		resultsLength =  results.length;
+	}
+	
+	var resNode = makeDiv("h5",["w3-text-light-grey"]);
+	resNode.appendChild(document.createTextNode("Taxonomy search: " + resultsLength + " results"))
+	myNode.appendChild(resNode);
+		
+	if(resultsLength <= 0){
+		return;
+	}
+
+	for (var i = 0; i < results.length; i++) { 
+		var card = makeDiv("div", ["w3-card-2","w3-round","parent","testhoverGray"],"7px","3px",buttonColor);
+
+		var titleSplit = results[i][1].split(",");
+		var tmp = "addToSearchField('"+titleSplit[0]+"','"+results[i][0]+"')";
+		card.setAttribute("onclick",tmp);
+
+		var hoverArea = makeDiv("div", ["w3-center","w3-round","tooltip","testhover"], undefined, "5px", darkerShadeColor, "10%");
+		card.appendChild(hoverArea);
+
+		var header = makeDiv("header", ["unselectable","w3-text-light-grey"], undefined, "2px 10px", undefined, "90%");
+		header.appendChild(document.createTextNode(results[i][1].replace(/,/g, ", ")));
+		card.appendChild(header);
+
+		var tooltiptextSpanHeader = document.createElement("div");
+		tooltiptextSpanHeader.innerHTML = results[i][1];
+		tooltiptextSpanHeader.style = "font-weight: bold";
+		tooltiptextSpanHeader.style.marginBottom = "5px";
+
+		var tooltiptextSpan = document.createElement("span");
+		tooltiptextSpan.innerHTML = results[i][3];
+
+		var tooltiptextDiv = makeDiv("div",["tooltiptextright"]);
+		tooltiptextDiv.appendChild(tooltiptextSpanHeader);
+		tooltiptextDiv.appendChild(tooltiptextSpan);
+		hoverArea.appendChild(tooltiptextDiv);
+
+		var butPara = document.createElement("p");
+		butPara.appendChild(makeButton("Open", "updateNavigation(event,'"+results[i][0]+"')", buttonColor, "0px 0px 0px 5px"));
+		butPara.appendChild(makeButton("Add to context", "addTaxoTagToContext(event,'"+results[i][0]+"','"+results[i][1]+"')", greenAccentColor, "0px 0px 0px 5px"));
+
+		tooltiptextDiv.appendChild(butPara);
+
+		myNode.appendChild(card);
+	}	
+}
+//#endregion
+
+//#region bookmark search
+function searchBms(){
+	showLoadingOverlay(true);
+	var query = getById("BmSearchInput").value.toLowerCase().trim();
+
+	if(query == ""){
+		if(contexts.length > 0)
+		{
+			var count = contexts[currentContext][1].length;
+			for(var i = 0; i < count; i++){
+				query += "["+contexts[currentContext][1][i][1].split(",")[0]+","+contexts[currentContext][1][i][0]+"]"
+
+				if(i < (count-1)){
+					query += " | ";
+				}
+			}
+			getById("BmSearchInput").value = query;
+		}
+	}
+
+	var childrenDrop = getById("ChildrenDropdown").value;
+	var childrenValue = "False";
+	
+	if(childrenDrop == "1"){
+		childrenValue = "True";
+	}
+	
+	var message = { fun: "newSearch", username: currUsername, password: currPassword, query: escape(query), children: childrenValue };
+	
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+		
+		addBmSearchResults([]);
+		addBmSearchResults(myObj.result);
+		showLoadingOverlay(false);
+	});
+}
+
+function addBmSearchResults(bms){
+	var myNode = getById("bmSearchCon");
+	removeChildren(myNode);
+
+	var taxoNode = getById("taxoSearchCon");
+	removeChildren(taxoNode);
+
+	var bmsLength = 0;
+
+	if(bms != undefined){
+		bmsLength = bms.length; 
+	}
+	
+	var resNode = makeDiv("h5",["w3-text-light-grey"]);
+	resNode.appendChild(document.createTextNode("Bookmark search: " + bmsLength + " results"));
+	myNode.appendChild(resNode);
+	
+	if(bmsLength > 0){
+		for (var i = 0; i < bms.length; i++) { 
+			var card = makeDiv("div", ["w3-card-2","w3-round","testhover"], "5px", undefined, darkestShadeColor);
+
+			var header = makeDiv("header",["w3-text-light-grey","w3-container","unselectable"]);
+			var h1 = makeDiv("h5",["w3-text-light-grey"],"5px");
+			h1.appendChild(document.createTextNode(bms[i][0]));
+			header.appendChild(h1);
+
+			card.appendChild(header);
+			card.setAttribute("onclick","showBmDetails('"+bms[i][0]+"',true)");
+			myNode.appendChild(card);
+		}
+	}		
+}
+//#endregion
+
+//#region bookmarks
 function getBms(){
 	var message = { fun: "getUserBookmarks", username: currUsername, password: currPassword };
 
@@ -991,70 +1075,54 @@ function getBms(){
 			showBmDetails(currentDetails,false);
 		}
 
-		addCurrBms(myObj.result);
 		addUserBms(myObj.result);
 		return 1;
 	});
 }
 
 function addUserBms(bms){
-	var myNode = document.getElementById("bmsCon");
+	//add tag to bm list
+	currBookmarks = [];
+
+	if(bms.length > 0){
+		for (var i = 0; i < bms.length; i++) { 
+			currBookmarks.push(bms[i][0]);
+		}
+	}
+
+	var list = getById("bmListMenu");
+	removeChildren(list);
+
+	for (var i = 0; i <  bms.length; i++) {
+		var item = document.createElement('li');
+		item.appendChild(document.createTextNode(bms[i][0]));
+		list.appendChild(item);
+	}
+
+	//user bm list
+	var myNode = getById("bmsCon");
 	removeChildren(myNode);
-	document.getElementById("numOfBmLabel").innerHTML = bms.length;
+	getById("numOfBmLabel").innerHTML = bms.length;
 	
 	if(bms.length > 0){
 		for (var i = 0; i < bms.length; i++) { 
-				var card = makeCardDiv("7px", "5px",darkerShadeColor);
-				card.classList.add("testhover");
+				var card = makeDiv("div", ["w3-card-2","w3-round","testhover"], "7px", "5px",darkerShadeColor);
+				var header = makeDiv("header", ["w3-text-light-grey","w3-container","unselectable"]);
+				var h1 = makeDiv("h5",undefined,"0px","0px");
+				var nodeDiv = makeDiv("div",["w3-text-light-grey"]);	
 
-				var header = document.createElement("header");
-				header.classList.add("w3-container");
-				header.classList.add("unselectable");
-				header.classList.add("w3-text-light-grey");
-				card.appendChild(header);
-
-				var h1 = document.createElement("h5");
-				h1.style.margin = "0px";
-				h1.style.padding = "0px";
-				var node = document.createTextNode(bms[i][0]);
-				var nodeDiv = document.createElement("div");					
-				nodeDiv.appendChild(node);
-				nodeDiv.classList.add("w3-text-light-grey");
+				nodeDiv.appendChild(document.createTextNode(bms[i][0]));
 				h1.appendChild(nodeDiv);
-				var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
-				card.setAttribute("onclick",tmpOnClick);
-
 				header.appendChild(h1);
-
+				card.appendChild(header);
+				card.setAttribute("onclick","showBmDetails('"+bms[i][0]+"',true)");
 				myNode.appendChild(card);
 		}
 	}		
 }
 
-function addCurrBms(bms){
-	currBookmarks = [];
-
-	if(bms.length > 0){
-		for (var i = 0; i < bms.length; i++) { 
-				currBookmarks.push(bms[i][0]);
-		}
-	}
-
-	var list = document.getElementById("bmListMenu");
-	removeChildren(list);
-
-    for (var i = 0; i <  bms.length; i++) {
-        var item = document.createElement('li');
-
-        item.appendChild(document.createTextNode(bms[i][0]));
-
-        // Add it to the list:
-        list.appendChild(item);
-    }
-}
-
 function filter() {
-        var value = document.getElementById("addConToBmInput").value;
+        var value = getById("addConToBmInput").value;
         $("#bmListMenu > li").each(function() {
             if ($(this).text().search(value) > -1) {
                 $(this).show();
@@ -1081,30 +1149,19 @@ function showBmDetails(bookmark, showDetails){
 		}
 	}
 
-	var myNode = document.getElementById("bmDetCon");
+	var myNode = getById("bmDetCon");
 	removeChildren(myNode);
 
 	if(bm == undefined){
 		return;
 	};
 
-	var card = makeCardDiv("7px", "5px", darkerShadeColor);
-
-	var header = document.createElement("header");
-	header.classList.add("w3-container");
-	header.classList.add("w3-text-light-grey");
-	header.classList.add("unselectable");
+	var card = makeDiv("div", ["w3-card-2","w3-round"], "7px", "5px", darkerShadeColor);
+	var header = makeDiv("header",["unselectable", "w3-text-light-grey","w3-container"]);
+	var nodeDiv = makeDiv("h4",["w3-text-light-grey"], "0px");					
+	nodeDiv.appendChild(document.createTextNode(bm[0]));
+	header.appendChild(nodeDiv);
 	card.appendChild(header);
-
-	var h1 = document.createElement("h4");
-	h1.style.marginBottom = "0px";
-	h1.style.marginTop = "0px";
-	var node = document.createTextNode(bm[0]);
-	var nodeDiv = document.createElement("div");					
-	nodeDiv.appendChild(node);
-	nodeDiv.classList.add("w3-text-light-grey");
-	h1.appendChild(nodeDiv);
-	header.appendChild(h1);
 
 	var a = document.createElement("a");
 	var aDiv = document.createElement("div");
@@ -1125,7 +1182,7 @@ function showBmDetails(bookmark, showDetails){
 	card.appendChild(makeButton("Download", "getBookmarkFile('"+bm[0]+"')", blueAccentColor, "5px 5px 0px 0px"));
 	card.appendChild(makeButton("Delete", "removeBookmark('"+bm[0]+"')", buttonColor, "5px 5px 0px 0px"));	
 
-	var connectedConcepts = document.createElement("div");
+	var connectedConcepts = makeDiv("div",undefined,undefined,"0px");
 
 	if(bm[2].length > 0)
 	{
@@ -1134,37 +1191,24 @@ function showBmDetails(bookmark, showDetails){
 		card.appendChild(spaceDiv);
 		
 		for (var j = 0; j < bm[2].length; j++) { 
-			var para2 = makeCardDiv("10px", "3px", buttonColor);
-			para2.classList.add("unselectable");
-			para2.classList.add("testhoverGray");
-			para2.classList.add("w3-text-light-grey");
-			var tmpTitle = bm[2][j][0];
-			var title = tmpTitle.replace(/,/g, ", ");
-			var node2 = document.createTextNode(title);
-		
-			var tmp = "";
-			tmp = bm[2][j][1];
-			tmp = "updateNavigation(event,'"+tmp+"')";
-			para2.setAttribute("onclick",tmp);
-
-			para2.appendChild(node2);
-			connectedConcepts.appendChild(para2);
+			var connectedConcept = makeDiv("div", ["w3-card-2","w3-round","unselectable","testhoverGray","w3-text-light-grey"], "10px", "3px", buttonColor);
+			connectedConcept.setAttribute("onclick","updateNavigation(event,'"+bm[2][j][1]+"')");
+			connectedConcept.appendChild(document.createTextNode(bm[2][j][0].replace(/,/g, ", ")));
+			connectedConcepts.appendChild(connectedConcept);
 		}
 	}
 
-	connectedConcepts.style.padding = "0px";
 	card.appendChild(connectedConcepts);
-
 	myNode.appendChild(card);
 
 	if(showDetails){
 		switchView(3);
 	}
 
-	var image = document.getElementById('imagePreview');
+	var image = getById('imagePreview');
 	image.removeAttribute('src');
 	
-	document.getElementById("similarBmsDiv").hidden = true;
+	getById("similarBmsDiv").hidden = true;
 
 	loadFilePreview(bm[0]);
 	loadSimilarBms(bm[0]);
@@ -1213,9 +1257,9 @@ function loadFilePreview(bookmark){
 }
 
 function showFilePreview(bookmark){
-		var image = document.getElementById('imagePreview');
-		var textPreview = document.getElementById('textPreview');
-		var filePreviewDiv = document.getElementById('filePreviewDiv');
+		var image = getById('imagePreview');
+		var textPreview = getById('textPreview');
+		var filePreviewDiv = getById('filePreviewDiv');
 		if(imagePreviewCache[bookmark] == "")
 		{
 			image.removeAttribute('src');
@@ -1259,10 +1303,10 @@ function loadSimilarBms(bookmark){
 }
 
 function addSimilarBms(bms){
-	var myNode = document.getElementById("similarBmsCon");
+	var myNode = getById("similarBmsCon");
 	removeChildren(myNode);
 
-	var simBmsDiv = document.getElementById("similarBmsDiv");
+	var simBmsDiv = getById("similarBmsDiv");
 
 	if(bms.length == 0){
 		simBmsDiv.hidden = true;
@@ -1272,347 +1316,29 @@ function addSimilarBms(bms){
 	}
 
 	for (var i = 0; i < bms.length; i++) { 
-		var card = makeCardDiv("5px 15px", undefined, darkestShadeColor);
-		card.classList.add("testhover");
+		var card = makeDiv("div", ["w3-card-2","w3-round","testhover"], "5px 15px", undefined, darkestShadeColor);
+		var header = makeDiv("header", ["w3-text-light-grey","w3-container","unselectable"]);
+		var h1 = makeDiv("h5",["w3-text-light-grey"], "5px");
 
-		var header = document.createElement("header");
-		header.classList.add("w3-container");
-		header.classList.add("w3-text-light-grey");
-		header.classList.add("unselectable");
-		card.appendChild(header);
-
-		var h1 = document.createElement("h5");
-		h1.style.margin ="5px";
-	
-		var node = document.createTextNode(bms[i]);
-		h1.classList.add("w3-text-light-grey");
-		h1.appendChild(node);
-		
-		var tmpOnClick = "showBmDetails('"+bms[i]+"',true)";
-		card.setAttribute("onclick",tmpOnClick);
-
+		h1.appendChild(document.createTextNode(bms[i]));
 		header.appendChild(h1);
+		card.appendChild(header);
+		card.setAttribute("onclick","showBmDetails('"+bms[i]+"',true)");
 		myNode.appendChild(card);
 	}	
-}
-//#endregion
-
-//#region tree
-function showTreeView(){
-
-	if(bmTreeNeedsUpdate ==  false){
-		return;
-	}
-
-	showLoadingOverlay(true);
-
-	var message = { fun: "getBookmarkTree", username: currUsername, password: currPassword};
-
-	makeAjaxCall(JSON.stringify(message)).then(function(result) 
-	{
-		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
-
-		var myObj = JSON.parse(result);
-		
-		showLoadingOverlay(false);
-		populateTreeView(myObj.result);
-
-		bmTreeNeedsUpdate = false;
-	});
-}
-
-function populateTreeView(results){
-	var myNode = document.getElementById("myUL");
-	removeChildren(myNode);
-
-	var resultsLength = 0;
-
-	if(results != undefined){
-		resultsLength =  results.length;
-	}
-	
-	if(resultsLength > 0){	
-		populateTreeViewHelper(myNode, results)
-		var toggler = document.getElementsByClassName("caret");
-		var i;
-
-		for (i = 0; i < toggler.length; i++) {
-		toggler[i].addEventListener("click", function() {
-			this.parentElement.querySelector(".nested").classList.toggle("active");
-			this.classList.toggle("caret-down");
-		});
-		}
-	}		
-}
-
-function populateTreeViewHelper(parent, children){
-	var card = document.createElement("li");
-	card.style.margin = " 1px 12px";			
-	card.style.padding = "1px 3px";
-	card.classList.add("w3-round");
-	card.style.background = darkerShadeColor;
-
-
-	var header = document.createElement("span");
-	header.classList.add("unselectable");
-	header.classList.add("caret");
-	header.classList.add("w3-text-light-grey");
-	header.style.padding = "2px 5px";
-	card.appendChild(header);
-
-	var title = children[0][1].split(",")[0];
-	var node = document.createTextNode(title);
-	header.appendChild(node);
-	header.classList.add("w3-text-light-grey");
-	parent.appendChild(card);
-
-	var card2 = document.createElement("ul");		
-	card2.style.padding = "1px";
-	card2.classList.add("w3-round");
-	card2.classList.add("nested");
-	card2.style.background = darkestShadeColor;
-	card2.style.background = darkerShadeColor;
-	card.appendChild(card2);
-
-	for (var i = 0; i < children[0][2].length; i++) { 
-		var card3 = document.createElement("li");
-		card3.style.margin = "5px 12px";			
-		card3.style.padding = "1px 3px";
-		card3.classList.add("w3-card-2");
-		card3.classList.add("w3-round");
-		card3.style.background = darkestShadeColor;
-		card3.classList.add("testhover");
-
-		var header2 = document.createElement("header");
-		header2.classList.add("unselectable");
-		header2.classList.add("w3-text-light-grey");
-		header2.style.padding = "2px 5px";
-		card3.appendChild(header2);
-
-		var title2 = children[0][2][i];
-		var node2 = document.createTextNode(title2);
-		header2.appendChild(node2);
-		header2.classList.add("w3-text-light-grey");
-		card2.appendChild(card3);
-
-		var tmpOnClick = "showBmDetails('"+children[0][2][i]+"',true)";
-		card3.setAttribute("onclick",tmpOnClick);
-	}
-
-	for (var i = 1; i < children.length; i++) { 
-		populateTreeViewHelper(card2, children[i])
-	}
-}
-//#endregion
-
-//#region taxo search
-function searchTaxo(){
-	showLoadingOverlay(true);
-	
-	var currSearchWord = document.getElementById("ConceptSearchInput").value.toLowerCase().trim();
-	var contextConcepts = "";
-	
-	if(contexts.length > 0){
-		var count = contexts[currentContext][1].length;
-		for(var i = 0; i < count; i++){
-			contextConcepts += contexts[currentContext][1][i][0]
-
-			if(i < (count-1)){
-				contextConcepts += ",";
-			}
-		}
-	}
-	
-	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord), contextConcepts: escape(contextConcepts) };
-
-	makeAjaxCall(JSON.stringify(message)).then(function(result) 
-	{
-		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
-
-		var myObj = JSON.parse(result);
-		
-		showLoadingOverlay(false);
-		addSearchResults(myObj.result);
-	});
-}
-
-function addSearchResults(results){
-	var myNode = document.getElementById("taxoSearchCon");
-	removeChildren(myNode);
-
-	var bmsNode = document.getElementById("bmSearchCon");
-	removeChildren(bmsNode);
-
-	var resultsLength = 0;
-
-	if(results != undefined){
-		resultsLength =  results.length;
-	}
-	
-	var resNode = document.createElement("h4");
-	resNode.classList.add("w3-text-light-grey");
-	var resCount = document.createTextNode("Taxonomy search: " + resultsLength + " results");
-	resNode.appendChild(resCount)
-	myNode.appendChild(resNode);
-		
-	if(resultsLength > 0){	
-		for (var i = 0; i < results.length; i++) { 
-				var card = makeCardDiv("7px","3px",buttonColor);
-				card.classList.add("parent");
-				card.classList.add("testhoverGray");
-
-				var titleSplit = results[i][1].split(",");
-				var tmp = "addToSearchField('"+titleSplit[0]+"','"+results[i][0]+"')";
-				card.setAttribute("onclick",tmp);
-	
-				var hoverArea = document.createElement("div");
-				hoverArea.style.width = "10%";
-				hoverArea.classList.add("tooltip");
-				hoverArea.classList.add("w3-center");
-				hoverArea.classList.add("testhover");
-				hoverArea.classList.add("w3-round");
-				hoverArea.style.background = backgroundColor;
-				hoverArea.style.padding = "5px";
-				card.appendChild(hoverArea);
-
-				var header = document.createElement("header");
-				header.classList.add("unselectable");
-				header.classList.add("w3-text-light-grey");
-				header.style.width = "90%";
-				header.style.padding = "2px 10px";
-				card.appendChild(header);
-			
-				var tmpTitle = results[i][1];
-				var title = tmpTitle.replace(/,/g, ", ");
-				var node = document.createTextNode(title);
-				header.appendChild(node);
-				header.classList.add("w3-text-light-grey");
-
-				var tooltiptextDiv = document.createElement("div");
-
-				var tooltiptextSpanHeader = document.createElement("div");
-				tooltiptextSpanHeader.innerHTML = results[i][1];
-				tooltiptextSpanHeader.style = "font-weight: bold";
-				tooltiptextSpanHeader.style.marginBottom = "5px";
-				tooltiptextDiv.appendChild(tooltiptextSpanHeader);
-
-				var tooltiptextSpan = document.createElement("span");
-				tooltiptextSpan.innerHTML = results[i][3];
-				tooltiptextDiv.appendChild(tooltiptextSpan);
-
-				tooltiptextDiv.classList.add("tooltiptextright");
-				hoverArea.appendChild(tooltiptextDiv);
-
-				var butPara = document.createElement("p");
-				butPara.appendChild(makeButton("Open", "updateNavigation(event,'"+results[i][0]+"')", buttonColor, "0px 0px 0px 5px"));
-				butPara.appendChild(makeButton("Add to context", "addTaxoTagToContext(event,'"+results[i][0]+"','"+results[i][1]+"')", greenAccentColor, "0px 0px 0px 5px"));
-
-				tooltiptextDiv.appendChild(butPara);
-
-				myNode.appendChild(card);
-		}
-	}		
-}
-//#endregion
-
-//#region bookmark search
-function searchBms(){
-	showLoadingOverlay(true);
-	var query = document.getElementById("BmSearchInput").value.toLowerCase().trim();
-
-	if(query == ""){
-		if(contexts.length > 0)
-		{
-			var count = contexts[currentContext][1].length;
-			for(var i = 0; i < count; i++){
-				query += "["+contexts[currentContext][1][i][1].split(",")[0]+","+contexts[currentContext][1][i][0]+"]"
-
-				if(i < (count-1)){
-					query += " | ";
-				}
-			}
-			document.getElementById("BmSearchInput").value = query;
-		}
-	}
-
-	var childrenDrop = document.getElementById("ChildrenDropdown").value;
-	var childrenValue = "False";
-	
-	if(childrenDrop == "1"){
-		childrenValue = "True";
-	}
-	
-	var message = { fun: "newSearch", username: currUsername, password: currPassword, query: escape(query), children: childrenValue };
-	
-	makeAjaxCall(JSON.stringify(message)).then(function(result) 
-	{
-		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
-
-		var myObj = JSON.parse(result);
-		
-		addBmSearchResults([]);
-		addBmSearchResults(myObj.result);
-		showLoadingOverlay(false);
-	});
-}
-
-function addBmSearchResults(bms){
-	var myNode = document.getElementById("bmSearchCon");
-	removeChildren(myNode);
-
-	var taxoNode = document.getElementById("taxoSearchCon");
-	removeChildren(taxoNode);
-
-	var bmsLength = 0;
-
-	if(bms != undefined){
-		bmsLength = bms.length; 
-	}
-	
-	var resNode = document.createElement("h4");
-	var resCount = document.createTextNode("Bookmark search: " + bmsLength + " results");
-	resNode.classList.add("w3-text-light-grey");
-	resNode.appendChild(resCount)
-	myNode.appendChild(resNode);
-	
-	if(bmsLength > 0){
-		for (var i = 0; i < bms.length; i++) { 
-			var card = makeCardDiv("5px",undefined,darkestShadeColor);
-			card.classList.add("testhover");
-
-			var header = document.createElement("header");
-			header.classList.add("w3-container");
-			header.classList.add("w3-text-light-grey");
-			header.classList.add("unselectable");
-			card.appendChild(header);
-
-			var h1 = document.createElement("h5");
-			h1.style.margin ="5px";
-		
-			var node = document.createTextNode(bms[i][0]);
-			h1.classList.add("w3-text-light-grey");
-			h1.appendChild(node);
-			
-			var tmpOnClick = "showBmDetails('"+bms[i][0]+"',true)";
-			card.setAttribute("onclick",tmpOnClick);
-
-			header.appendChild(h1);
-			myNode.appendChild(card);
-		}
-	}		
 }
 
 function addBm(){
 	showLoadingOverlay(true);
 
-	var files = document.getElementById('fileToUpload').files;
+	var files = getById('fileToUpload').files;
 	var fileName = "";
 	var fileData = "";
 	var fileSize = 0;
 
   	if (files.length > 0) {
     	var fileToSave = files[0];
-		document.getElementById('fileToUpload').value = null;
+		getById('fileToUpload').value = null;
 
 		if(fileToSave.size > 50000000){
 			showMessage("File size exceeds 50MB, please select a smaller file");
@@ -1650,7 +1376,7 @@ function addBm(){
 
 						var data = canvas.toDataURL();
 
-						imagePreviewCache[document.getElementById("newBmName").value] = data;
+						imagePreviewCache[getById("newBmName").value] = data;
 
 						image.onload = function(){};
 
@@ -1673,7 +1399,7 @@ function addBm(){
 
 					var encodedText = window.btoa(text);
 
-					imagePreviewCache[document.getElementById("newBmName").value] = encodedText;
+					imagePreviewCache[getById("newBmName").value] = encodedText;
 					addBmCont(fileName,cba,fileSize,encodedText);
 				}
 				else
@@ -1688,8 +1414,8 @@ function addBm(){
 }
 
 function addBmCont(fileName, fileData,fileSize,imagePreview){
-	var newBmName = escape(document.getElementById("newBmName").value);
-	var newBmUrl = escape(document.getElementById("newBmUrl").value);
+	var newBmName = escape(getById("newBmName").value);
+	var newBmUrl = escape(getById("newBmUrl").value);
 
 	if(newBmName == ""){
 		showLoadingOverlay(false);
@@ -1737,7 +1463,6 @@ function addBmCont(fileName, fileData,fileSize,imagePreview){
 }
 
 function sendRestOfData(){
-
 	var bookmark = sendInChunksbookmark;
 	var dataToSend = sendInChunksdataToSend;
 	var iter = sendInChunksiter;
@@ -1841,7 +1566,7 @@ function removeBookmark(bmToDelete){
 }
 
 function addTag(){
-	var bmName = document.getElementById("bmName").value;
+	var bmName = getById("bmName").value;
 
 	if(!(currBookmarks.indexOf(bmName) > -1)){
 		showMessage("This bookmark does not exist");
@@ -1866,11 +1591,11 @@ function addTag(){
 		showMenu(0);
 	}); 
 }
-//#endregion
+//#endregion 
 
 //#region context
 function addNewContext(){
-	var conName = document.getElementById("newContextInput").value;
+	var conName = getById("newContextInput").value;
 	contexts.push([conName,[],[]]);
 	updateContext(conName);
 }
@@ -1942,101 +1667,63 @@ function getContexts(contextToShow){
 
 function setUpContext(contextToShow){
 	currentContext = contextToShow;
-	var myNode = document.getElementById("contextSection");
+	var myNode = getById("contextSection");
 	removeChildren(myNode);
 
 	if(contexts.length > 0){
 		var context = contexts[contextToShow];
 		
-		var card = makeCardDiv(undefined, "5px", darkerShadeColor);
+		var card = makeDiv("div", ["w3-card-2","w3-round"], undefined, "5px", darkerShadeColor);
 	
-		var tableDiv = document.createElement("div");
-		tableDiv.classList.add("w3-round");
+		var tableDiv = makeDiv("div", ["w3-round"],undefined,undefined,undefined,"100%")
 		tableDiv.style.display = "table";
-		tableDiv.style.width =  "100%";
-		//tableDiv.style.background = darkestShadeColor;
 		card.appendChild(tableDiv);
 
-		var leftCol = document.createElement("div");
+		var leftCol = makeDiv("div",undefined,undefined,undefined,undefined,"30%")
 		leftCol.style.display =  "table-cell";
-		leftCol.style.width =  "30%";
 		tableDiv.appendChild(leftCol);
 
-		var centerCol = document.createElement("div");
+		var centerCol = makeDiv("div",undefined,undefined,undefined,undefined,"40%")
 		centerCol.style.display =  "table-cell";
-		centerCol.style.width =  "40%";
 		tableDiv.appendChild(centerCol);
 
-		var rightCol = document.createElement("div");
-		rightCol.style.display =  "table-cell";
-		rightCol.style.width =  "30%";
-		rightCol.style.textAlign =  "right";
+		var rightCol = makeDiv("div",undefined,undefined,undefined,undefined,"30%")
+		rightCol.style.display = "table-cell";
+		rightCol.style.textAlign = "right";
 		tableDiv.appendChild(rightCol);
 
-		var h1 = document.createElement("h4");
-		h1.classList.add("unselectable");
-		h1.classList.add("w3-text-light-grey");
-		h1.classList.add("w3-wide");
-		var node = document.createTextNode(context[0]);
-		h1.appendChild(node);
-		h1.style.margin = "0px";
-		centerCol.appendChild(h1);
+		var contextName = makeDiv("h4",["w3-wide","unselectable","w3-text-light-grey"],"0px");
+		contextName.appendChild(document.createTextNode(context[0]));
+		centerCol.appendChild(contextName);
 
 		var deleteContextBtn = makeButton("Delete", "deleteContext('"+context[0]+"')", buttonColor, "0px 6px 4px 0px");
 		deleteContextBtn.style.padding = "4px 7px";
 		rightCol.appendChild(deleteContextBtn);
 
-		var h2 = document.createElement("h5");
-		h2.classList.add("unselectable");
-		h2.classList.add("w3-text-light-grey")
-		var node2 = document.createTextNode("Concepts");
-		h2.appendChild(node2);
-		card.appendChild(h2);
+		var conceptsText = makeDiv("h5",["w3-text-light-grey","unselectable","w3-text-light-grey"],"0px");
+		conceptsText.appendChild(document.createTextNode("Concepts"));
+		card.appendChild(conceptsText);
 
 		for (var i = 0; i < context[1].length; i++) { 
-			var cardForTag = makeCardDiv("10px", "3px", buttonColor);
-			cardForTag.classList.add("testhoverGray");
-			cardForTag.classList.add("parent");
-
-			var hoverArea = document.createElement("div");
-			hoverArea.style.width = "10%";
-			hoverArea.classList.add("tooltip");
-			hoverArea.classList.add("w3-center");
-			hoverArea.classList.add("w3-round");
-			hoverArea.classList.add("testhover");
-			hoverArea.style.background = backgroundColor;
-			hoverArea.style.margin = "0px";
+			var cardForTag = makeDiv("div", ["w3-card-2","w3-round", "parent", "testhoverGray"],"10px", "3px", buttonColor);
+			var hoverArea = makeDiv("div", ["w3-center","w3-round","tooltip","testhover"], "0px", undefined, backgroundColor, "10%");
+			var textDiv = makeDiv("header", ["w3-text-light-grey"], "0px 0px 5px 0px", "0px 5px", undefined, "90%");
 			cardForTag.appendChild(hoverArea);
-
-			var textDiv = document.createElement("header");
-			textDiv.classList.add("w3-text-light-grey");
-			textDiv.style.width = "90%";
-			textDiv.style.padding = "0px 5px";
-			textDiv.style.margin = "0px 0px 5px 0px";
 			cardForTag.appendChild(textDiv);
-
-			var textDiv2 = document.createElement("div");
-			textDiv2.style.width = "10%";
-			cardForTag.appendChild(textDiv2);
-
-			var para2 = document.createElement("div");
-			para2.classList.add("unselectable");
-			para2.classList.add("w3-text-light-grey");
+			cardForTag.appendChild(makeDiv("div", undefined,undefined,undefined,undefined, "10%"));
 
 			var tmpTitle = context[1][i][1];
-			var title = tmpTitle.replace(/,/g, ", ");
-			var nodeTmp = document.createTextNode(title);
+			var nodeTmp = document.createTextNode(tmpTitle.replace(/,/g, ", "));
 
 			var tmp = tmpTitle.split(",");
-			tmp = tmp[0];
-			tmp = "addToSearchField('"+tmp+"','"+context[1][i][0]+"')";
+			tmp = "addToSearchField('"+tmp[0]+"','"+context[1][i][0]+"')";
 			cardForTag.setAttribute("onclick",tmp);
 
-			para2.appendChild(nodeTmp);
-			textDiv.appendChild(para2);
+			var par = makeDiv("div", ["unselectable", "w3-text-light-grey"]);
+			par.appendChild(nodeTmp);
+			textDiv.appendChild(par);
 
-			var tooltiptextDiv = document.createElement("div");
-			tooltiptextDiv.classList.add("tooltiptext");
+			var tooltiptextDiv = makeDiv("div", ["tooltiptext"]);;
 			hoverArea.appendChild(tooltiptextDiv);
 
 			var butPara = document.createElement("div");
@@ -2048,64 +1735,30 @@ function setUpContext(contextToShow){
 			card.appendChild(cardForTag);
 		}
 
-		var h4 = document.createElement("h5");
-		h4.classList.add("unselectable");
-		h4.classList.add("w3-text-light-grey");
-		var node3 = document.createTextNode("Queries");
-		h4.appendChild(node3);
-		card.appendChild(h4);
+		var queriesText = makeDiv("div", ["unselectable", "w3-text-light-grey"]);
+		queriesText.appendChild(document.createTextNode("Queries"));
+		card.appendChild(queriesText);
 
 		for (var i = 0; i < context[2].length; i++) { 
-			var cardForQuery = makeCardDiv("10px", undefined, backgroundColor);
-			cardForQuery.classList.add("parent");
-			cardForQuery.classList.add("testhoverGray");
-
-			var tmp = "";
-			tmp = context[2][i][1];
-			tmp = "updateSearchFromContextQuery('"+tmp+"')";
-			cardForQuery.setAttribute("onclick",tmp);
-
-			var hoverArea = document.createElement("div");
-			hoverArea.style.width = "10%";
-			hoverArea.classList.add("tooltip");
-			hoverArea.classList.add("w3-center");
-			hoverArea.classList.add("w3-round");
-			hoverArea.classList.add("testhover");
-			hoverArea.style.background = buttonColor;
-			hoverArea.style.margin = "5px";
+			var cardForQuery = makeDiv("div", ["w3-card-2","w3-round", "parent", "testhoverGray"], "10px", undefined, backgroundColor);
+			cardForQuery.setAttribute("onclick","updateSearchFromContextQuery('"+context[2][i][1]+"')");
+			
+			var hoverArea = makeDiv("div", ["w3-center","w3-round","tooltip","testhover"], "5px", undefined, buttonColor, "10%");
+			var textDiv = makeDiv("header", ["w3-text-light-grey"], "0px 0px 5px 0px", "0px", undefined, "90%");
 			cardForQuery.appendChild(hoverArea);
-
-			var textDiv = document.createElement("header");
-			textDiv.classList.add("w3-text-light-grey");
-			textDiv.style.width = "90%";
-			textDiv.style.padding = "0px";
-			textDiv.style.margin = "0px 0px 5px 0px";
 			cardForQuery.appendChild(textDiv);
+			cardForQuery.appendChild(makeDiv("div", undefined,undefined,undefined,undefined, "10%"));
 
-			var textDiv2 = document.createElement("div");
-			textDiv2.style.width = "10%";
-			cardForQuery.appendChild(textDiv2);
+			var queryName = makeDiv("div", ["unselectable", "w3-text-light-grey"], "0px");
+			queryName.appendChild(document.createTextNode(context[2][i][0]));
+			queryName.style.fontWeight = "bold";
+			textDiv.appendChild(queryName);
 
-			var para2 = document.createElement("div");
-			para2.classList.add("unselectable");
-			var title = context[2][i][0];
-			var nodeTmp1 = document.createTextNode(title);
-			para2.classList.add("w3-text-light-grey");
-			para2.appendChild(nodeTmp1);
-			para2.style.margin = "0px";
-			para2.style.fontWeight = "bold";
-			textDiv.appendChild(para2);
+			var query = makeDiv("div", ["unselectable", "w3-text-light-grey"]);
+			query.appendChild(document.createTextNode(context[2][i][1]));
+			textDiv.appendChild(query);
 
-			var para3 = document.createElement("div");
-			para3.classList.add("unselectable");
-			para3.classList.add("w3-text-light-grey");
-			var querytext = context[2][i][1];
-			var nodeTmp2 = document.createTextNode(querytext);
-			para3.appendChild(nodeTmp2);
-			textDiv.appendChild(para3);
-
-			var tooltiptextDiv = document.createElement("div");
-			tooltiptextDiv.classList.add("tooltiptext");
+			var tooltiptextDiv= makeDiv("div", ["tooltiptext"]);
 			hoverArea.appendChild(tooltiptextDiv);
 
 			var butPara = document.createElement("div");
@@ -2122,22 +1775,22 @@ function setUpContext(contextToShow){
 }
 
 function updateSearchFromContextQuery(query){
-	document.getElementById("BmSearchInput").value = query;
+	getById("BmSearchInput").value = query;
 }
 
 function addToSearchField(text,id){
-	var searchField = document.getElementById("BmSearchInput").value;
+	var searchField = getById("BmSearchInput").value;
 
 	if(searchField == ""){
-		document.getElementById("BmSearchInput").value = "["+text+","+id+"]";
+		getById("BmSearchInput").value = "["+text+","+id+"]";
 	}
 	else{
-		document.getElementById("BmSearchInput").value += " " + "["+text+","+id+"]";
+		getById("BmSearchInput").value += " " + "["+text+","+id+"]";
 	}
 }
 
 function updateContextDropdown(){
-	var dropdown = document.getElementById("contextDropdown");
+	var dropdown = getById("contextDropdown");
 	removeChildren(dropdown);
 
 	for(var i = 0; i < contexts.length; i++)
@@ -2150,7 +1803,7 @@ function updateContextDropdown(){
 }
 
 function selectContext(){
-	setUpContext(document.getElementById("contextDropdown").value);
+	setUpContext(getById("contextDropdown").value);
 }
 
 function addTaxoTagToContext(ev,taxoId,taxoName){
@@ -2170,11 +1823,8 @@ function saveQueryToContext(){
 		return;
 	}
 
-	var queryName = document.getElementById("newQueryNameInput").value;
-	var query = document.getElementById("BmSearchInput").value;
-
-	// queryName = queryName.replace(","," ");
-	// query = query.replace(",","");
+	var queryName = getById("newQueryNameInput").value;
+	var query = getById("BmSearchInput").value;
 
 	contexts[currentContext][2].push([queryName, query]);
 	updateContext(contexts[currentContext][0]);
@@ -2189,7 +1839,7 @@ function updateQueryInContext(ev, queryName){
 		return;
 	}
 
-	var query = document.getElementById("BmSearchInput").value;
+	var query = getById("BmSearchInput").value;
 
 	for(var i = 0; i < contexts[currentContext][2].length; i++ ){
 		if(contexts[currentContext][2][i][0] == queryName){
@@ -2270,6 +1920,78 @@ function deleteContext(contextToUpdate)
 }
 //#endregion
 
+//#region tree
+function showTreeView(){
+	if(bmTreeNeedsUpdate == false){
+		return;
+	}
+
+	showLoadingOverlay(true);
+
+	var message = { fun: "getBookmarkTree", username: currUsername, password: currPassword};
+
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+		
+		showLoadingOverlay(false);
+		populateTreeView(myObj.result);
+
+		bmTreeNeedsUpdate = false;
+	});
+}
+
+function populateTreeView(results){
+	var myNode = getById("myUL");
+	removeChildren(myNode);
+
+	var resultsLength = 0;
+
+	if(results != undefined){
+		resultsLength =  results.length;
+	}
+
+	if(resultsLength > 0){	
+		populateTreeViewHelper(myNode, results)
+		var toggler = document.getElementsByClassName("caret");
+		var i;
+
+		for (i = 0; i < toggler.length; i++) {
+		toggler[i].addEventListener("click", function() {
+			this.parentElement.querySelector(".nested").classList.toggle("active");
+			this.classList.toggle("caret-down");
+		});
+		}
+	}	
+}
+
+function populateTreeViewHelper(parent, children){
+	var card = makeDiv("li",["w3-round"],"1px 12px","1px 3px",darkerShadeColor);
+	var header = makeDiv("span",["unselectable","caret","w3-text-light-grey"],undefined,"2px 5px",darkerShadeColor);
+	header.appendChild(document.createTextNode(children[0][1].split(",")[0]));
+	card.appendChild(header);
+	parent.appendChild(card);
+
+	var card2 = makeDiv("ul",["w3-round","nested"],undefined,"1px",darkerShadeColor);
+	card.appendChild(card2);
+
+	for (var i = 0; i < children[0][2].length; i++) { 
+		var card3 = makeDiv("li",["w3-round","w3-card-2","testhover"],"5px 12px","1px 3px",darkestShadeColor);
+		var header2 = makeDiv("header",["unselectable","w3-text-light-grey"],undefined,"2px 5px");
+		header2.appendChild(document.createTextNode(children[0][2][i]));
+		card3.appendChild(header2);
+		card3.setAttribute("onclick","showBmDetails('"+children[0][2][i]+"',true)");
+		card2.appendChild(card3);
+	}
+
+	for (var i = 1; i < children.length; i++) { 
+		populateTreeViewHelper(card2, children[i])
+	}
+}
+//#endregion
+
 //#region utility tools
 function makeAjaxCall(messageJSON){
 	var promiseObj = new Promise(function(resolve, reject){
@@ -2293,30 +2015,42 @@ function reloadPage(){
 	location.reload();
 }
 
+function getById(elementName){
+	return document.getElementById(elementName);
+}
+
 function removeChildren(node){
 	while (node.firstChild) {
 		node.removeChild(node.firstChild);
 	}
 }
 
-function makeCardDiv(margin = undefined, padding = undefined, color = undefined){
-	var card = document.createElement("div");
-	card.classList.add("w3-card-2");
-	card.classList.add("w3-round");
+function makeDiv(divType, additionalClasses = undefined ,margin = undefined, padding = undefined, color = undefined, width = undefined){
+	var toRet = document.createElement(divType);
 
 	if(margin != undefined){
-		card.style.margin = margin;
+		toRet.style.margin = margin;
 	}
 
 	if(padding != undefined){
-		card.style.padding = padding;
+		toRet.style.padding = padding;
 	}
 
 	if(color != undefined){
-		card.style.background = color;
+		toRet.style.background = color;
 	}
 
-	return card;
+	if(width != undefined){
+		toRet.style.width = width;
+	}
+
+	if(additionalClasses != undefined){
+		additionalClasses.forEach(element => {
+			toRet.classList.add(element);
+		});
+	}
+
+	return toRet;
 }
 
 function makeButton(buttonText, onClickAction, color, margin = undefined){
@@ -2374,8 +2108,8 @@ function autocomplete(inp, arr, enterKeyCallback) {
   });
 
   inp.addEventListener("keydown", function(e) {
-	  if(document.getElementById("overlayDiv").hidden == true){
-		var x = document.getElementById(this.id + "autocomplete-list");
+	  if(getById("overlayDiv").hidden == true){
+		var x = getById(this.id + "autocomplete-list");
 		if (x) x = x.getElementsByTagName("div");
 		if (e.keyCode == 40) {
 			currentFocus++;
