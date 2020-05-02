@@ -587,8 +587,8 @@ function setUpPage(){
 
 	addEnterKeyListener("newBmName", addBm);
 	addEnterKeyListener("newBmUrl", addBm);
-	addEnterKeyListener("ConceptSearchInput", searchTaxo);
-	addEnterKeyListener("BmSearchInput", searchBms);
+	//addEnterKeyListener("ConceptSearchInput", searchTaxo);
+	//addEnterKeyListener("BmSearchInput", searchBms);
 	addEnterKeyListener("newQueryNameInput", saveQueryToContext);
 	addEnterKeyListener("newContextInput", addNewContext);
 	addEnterKeyListener("PassInput", logIn);
@@ -718,7 +718,7 @@ function logIn(){
 		if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
 		var myObj = JSON.parse(result);
-		getById("responseField").C = myObj.result;
+		getById("responseField").textContent = myObj.result;
 		
 		if(myObj.result == "success"){
 			loggedIn();
