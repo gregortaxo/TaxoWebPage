@@ -533,6 +533,7 @@ li:hover {
 		</div>
 	</div>
 </section>
+<div id="xsstest"></div>
 
 <script src="FileSaver.js"></script>
 <script>
@@ -640,7 +641,7 @@ function loadTaxoIndex() {
 async function loggedIn(){
 	switchView(2);
 
-	getById("userNameLabel").innerHTML = currUsername;
+	getById("userNameLabel").textContent = currUsername;
 
 	updateNavigation(event,"00001740");
 	await getBms();
@@ -669,7 +670,7 @@ function showMenu(menu){
 	var menuDiv = getById("MenuDiv");
 
 	if(menu == 0){
-		getById("infoBoxText").innerHTML = "";
+		getById("infoBoxText").textContent = "";
 		menuDiv.hidden = true;
 		return;	
 	}
@@ -702,7 +703,7 @@ function showMenu(menu){
 }
 
 function showMessage(message){
-	getById("infoBoxText").innerHTML = message;
+	getById("infoBoxText").textContent = message;
 	showMenu(4);
 }
 
@@ -710,14 +711,14 @@ function logIn(){
 	currUsername = getById("UsernameInput").value;
 	currPassword = getById("PassInput").value;
 	
-	var message = { fun: "login", username: currUsername, password: currPassword };
+	var message = { fun: "login", username: escape(currUsername), password: escape(currPassword) };
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
 		if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
 		var myObj = JSON.parse(result);
-		getById("responseField").innerHTML = myObj.result;
+		getById("responseField").C = myObj.result;
 		
 		if(myObj.result == "success"){
 			loggedIn();
@@ -726,14 +727,14 @@ function logIn(){
 }
 
 function registerUser(){
-	var message = { fun: "regUser", username: getById("UsernameInput").value, password: getById("PassInput").value };
+	var message = { fun: "regUser", username: escape(getById("UsernameInput").value), password: escape(getById("PassInput").value) };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
 		if(result == ""){ showMessage("Connection error. Please try again"); return; }
 
 		var myObj = JSON.parse(result);
-		getById("responseField").innerHTML = myObj.result;
+		getById("responseField").textContent = myObj.result;
 	});
 }
 //#endregion
@@ -763,7 +764,7 @@ function updateNavigation(ev,taxoWord){
 		taxoCachedPartially = true;
 	}
 
-	var message = { fun: "searchTaxo", username: currUsername, password: currPassword, word: taxoWord };
+	var message = { fun: "searchTaxo", username: escape(currUsername), password: escape(currPassword), word: taxoWord };
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -898,7 +899,7 @@ function searchTaxo(){
 		}
 	}
 	
-	var message = { fun: "findTaxo", username: currUsername, password: currPassword, word: escape(currSearchWord), contextConcepts: escape(contextConcepts) };
+	var message = { fun: "findTaxo", username: escape(currUsername), password: escape(currPassword), word: escape(currSearchWord), contextConcepts: escape(contextConcepts) };
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -947,12 +948,12 @@ function addSearchResults(results){
 		card.appendChild(header);
 
 		var tooltiptextSpanHeader = document.createElement("div");
-		tooltiptextSpanHeader.innerHTML = results[i][1];
+		tooltiptextSpanHeader.textContent = results[i][1];
 		tooltiptextSpanHeader.style = "font-weight: bold";
 		tooltiptextSpanHeader.style.marginBottom = "5px";
 
 		var tooltiptextSpan = document.createElement("span");
-		tooltiptextSpan.innerHTML = results[i][3];
+		tooltiptextSpan.textContent = results[i][3];
 
 		var tooltiptextDiv = makeDiv("div",["tooltiptextright"]);
 		tooltiptextDiv.appendChild(tooltiptextSpanHeader);
@@ -997,7 +998,7 @@ function searchBms(){
 		childrenValue = "True";
 	}
 	
-	var message = { fun: "newSearch", username: currUsername, password: currPassword, query: escape(query), children: childrenValue };
+	var message = { fun: "newSearch", username: escape(currUsername), password: escape(currPassword), query: escape(query), children: childrenValue };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1047,7 +1048,7 @@ function addBmSearchResults(bms){
 
 //#region bookmarks
 function getBms(){
-	var message = { fun: "getUserBookmarks", username: currUsername, password: currPassword };
+	var message = { fun: "getUserBookmarks", username: escape(currUsername), password: escape(currPassword) };
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1102,7 +1103,7 @@ function addUserBms(bms){
 	//user bm list
 	var myNode = getById("bmsCon");
 	removeChildren(myNode);
-	getById("numOfBmLabel").innerHTML = bms.length;
+	getById("numOfBmLabel").textContent = bms.length;
 	
 	if(bms.length > 0){
 		for (var i = 0; i < bms.length; i++) { 
@@ -1165,7 +1166,7 @@ function showBmDetails(bookmark, showDetails){
 
 	var a = document.createElement("a");
 	var aDiv = document.createElement("div");
-	aDiv.innerHTML = (bm[1]);
+	aDiv.textContent = bm[1];
 	a.style.color = blueAccentColor;
 	a.target="_blank"
 	aDiv.style = "width: 100%; text-overflow: ellipsis; white-space: nowrap;overflow: hidden; margin-bottom: 5px;";
@@ -1221,7 +1222,7 @@ function loadFilePreview(bookmark){
 	}
 	else
 	{
-		var message = { fun: "getFilePreview", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
+		var message = { fun: "getFilePreview", username: escape(currUsername), password: escape(currPassword), bookmark: escape(bookmark)};
 
 		makeAjaxCall(JSON.stringify(message)).then(function(result) 
 		{
@@ -1287,7 +1288,7 @@ function loadSimilarBms(bookmark){
 	}
 	else
 	{
-		var message2 = { fun: "getSimilarBms", username: currUsername, password: currPassword, bookmark: escape(bookmark)};
+		var message2 = { fun: "getSimilarBms", username: escape(currUsername), password: escape(currPassword), bookmark: escape(bookmark)};
 
 		makeAjaxCall(JSON.stringify(message2)).then(function(result) 
 		{
@@ -1432,7 +1433,7 @@ function addBmCont(fileName, fileData,fileSize,imagePreview){
 		dataToSend = chunkArray(fileData,chunks);
 	}
 	
-	var message = { fun: "addTaxoBm", username: currUsername, password: currPassword, name: newBmName, url: newBmUrl,
+	var message = { fun: "addTaxoBm", username: escape(currUsername), password: escape(currPassword), name: newBmName, url: newBmUrl,
 					 filename: escape(fileName), filedata: escape(dataToSend[0]), filepreview: escape(imagePreview)};
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
@@ -1477,7 +1478,7 @@ function sendRestOfData(){
 
 	showLoadingOverlay(true);
 
-	var message = { fun: "addTaxoBmDataChunk", username: currUsername, password: currPassword, name: bookmark, filedata: escape(dataToSend[iter])};
+	var message = { fun: "addTaxoBmDataChunk", username: escape(currUsername), password: escape(currPassword), name: bookmark, filedata: escape(dataToSend[iter])};
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1515,7 +1516,7 @@ function chunkArray(arr,n){
 
 function getBookmarkFile(bookmark){
 	showLoadingOverlay(true);
-	var message = { fun: "getBookmarkFile", username: currUsername, password: currPassword, bookmark: bookmark};
+	var message = { fun: "getBookmarkFile", username: escape(currUsername), password: escape(currPassword), bookmark: bookmark};
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1541,7 +1542,7 @@ function getBookmarkFile(bookmark){
 function removeBookmark(bmToDelete){
 	showLoadingOverlay(true);
 	
-	var message = { fun: "removeBookmark", username: currUsername, password: currPassword, name: bmToDelete};
+	var message = { fun: "removeBookmark", username: escape(currUsername), password: escape(currPassword), name: bmToDelete};
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1566,7 +1567,7 @@ function removeBookmark(bmToDelete){
 }
 
 function addTag(){
-	var bmName = getById("bmName").value;
+	var bmName = getById("addConToBmInput").value;
 
 	if(!(currBookmarks.indexOf(bmName) > -1)){
 		showMessage("This bookmark does not exist");
@@ -1575,7 +1576,7 @@ function addTag(){
 
 	showLoadingOverlay(true);
 	
-	var message = { fun: "addTaxoTag", username: currUsername, password: currPassword, name: bmName, taxoId: currTaxoId, taxoName: currTaxoName };
+	var message = { fun: "addTaxoTag", username: escape(currUsername), password: escape(currPassword), name: bmName, taxoId: currTaxoId, taxoName: currTaxoName };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1628,7 +1629,7 @@ function updateContext(contextToUpdate){
 
 	var enc = window.btoa(JSON.stringify(context[2]));
 
-	var message = { fun: "addContext", username: currUsername, password: currPassword, contextName: context[0], taxoTags: taxos, queries: enc};
+	var message = { fun: "addContext", username: escape(currUsername), password: escape(currPassword), contextName: context[0], taxoTags: taxos, queries: enc};
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1643,7 +1644,7 @@ function updateContext(contextToUpdate){
 }
 
 function getContexts(contextToShow){
-	var message = { fun: "getContexts", username: currUsername, password: currPassword };
+	var message = { fun: "getContexts", username: escape(currUsername), password: escape(currPassword) };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(reqResult) 
 	{
@@ -1797,7 +1798,7 @@ function updateContextDropdown(){
 	{
 		var opt = document.createElement("option");
 		opt.value= i;
-		opt.innerHTML = contexts[i][0];
+		opt.textContent = contexts[i][0];
 		dropdown.appendChild(opt);
 	}
 }
@@ -1906,7 +1907,7 @@ function deleteContext(contextToUpdate)
 
 	showLoadingOverlay(true);
 
-	var message = { fun: "removeContext", username: currUsername, password: currPassword, contextName: context[0]};
+	var message = { fun: "removeContext", username: escape(currUsername), password: escape(currPassword), contextName: context[0]};
 	
 	var messageJSON = JSON.stringify(message);
 	
@@ -1928,7 +1929,7 @@ function showTreeView(){
 
 	showLoadingOverlay(true);
 
-	var message = { fun: "getBookmarkTree", username: currUsername, password: currPassword};
+	var message = { fun: "getBookmarkTree", username: escape(currUsername), password: escape(currPassword)};
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
