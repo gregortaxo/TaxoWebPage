@@ -592,6 +592,7 @@ function setUpPage(){
 	addEnterKeyListener("newQueryNameInput", saveQueryToContext);
 	addEnterKeyListener("newContextInput", addNewContext);
 	addEnterKeyListener("PassInput", logIn);
+	addEnterKeyListener("addConToBmInput", addTag);
 
 	ul.onclick = function(event) {
 		var target = getEventTarget(event);
@@ -1576,7 +1577,7 @@ function addTag(){
 
 	showLoadingOverlay(true);
 	
-	var message = { fun: "addTaxoTag", username: escape(currUsername), password: escape(currPassword), name: bmName, taxoId: currTaxoId, taxoName: currTaxoName };
+	var message = { fun: "addTaxoTag", username: escape(currUsername), password: escape(currPassword), name: escape(bmName), taxoId: currTaxoId, taxoName: currTaxoName };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
