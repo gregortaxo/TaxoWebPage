@@ -315,8 +315,8 @@ li:hover {
 		transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
 		<h4 class="w3-text-light-grey">Add thing</h4>
 		<section class = "w3-center">
-			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter thing name" id="newBmName" style="margin-bottom: 5px;" >
-			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter URL" id="newBmUrl" style="margin-bottom: 5px;">
+			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter thing name" id="newBmName" style="margin-bottom: 5px;" />
+			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter URL" id="newBmUrl" style="margin-bottom: 5px;"/>
 			<input class="w3-text-light-grey w3-round" id="fileToUpload" type="file" style="  background-color: #202225;color: #fff;width: 100%;"/>
 		</section>
 		<button class="w3-button w3-text-light-grey w3-round" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c;" onclick="addBm()">Add</button>
@@ -335,6 +335,17 @@ li:hover {
 			<div style="flex: 1; overflow-y: scroll; scrollbar-width: thin; scrollbar-color: #202225 #36393f;"> 
 				<ul id="bmListMenu" class="w3-text-light-grey" style="padding:0px;"></ul>
 			</div>
+	</div>
+
+	<div id="addNewConceptMenu" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
+	transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey" style="margin-bottom: 0px">Add new concept</h4>
+		<div class="w3-text-light-grey" style="margin-bottom: 10px" id="newConceptParent"></div>
+		<section class = "w3-center">
+			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter concept name" id="newConceptName" style="margin-bottom: 5px;"/>
+			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter description" id="newConceptDesc" style="margin-bottom: 5px;"/>
+		</section>
+		<button class="w3-button w3-text-light-grey w3-round" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c;" onclick="addConcept()">Add</button>
 	</div>
 
 	<div id="infoBox" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
@@ -440,7 +451,7 @@ li:hover {
 									<div id="contextSection" style="margin-top: 5px;"></div>
 							</div>
 							<p class = "w3-center">
-								<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c;" onclick="showMenu(1)" >Add new context</button>
+								<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c;" onclick="showMenu(1)">Add new context</button>
 								<select class="w3-button w3-round w3-text-light-grey" id="contextDropdown"  onchange="selectContext()" style="border: 0px; margin-left: 5px; background: #4f545c;"></select>
 							</p>
 						</div>						
@@ -459,6 +470,10 @@ li:hover {
 						<div id="taxoNavConWord"> </div>
 						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
 								onclick="showMenu(5)">Add To Thing</button>
+						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
+								onclick="showMenu(6)">Add New Concept</button>
+						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
+								id="removeConceptButton" onclick="removeConcept()">Delete Concept</button>
 						<div id="ConnectedThings" class="w3-container w3-center w3-content w3-card-2" style="background: #36393f;" hidden>
 							<h4 class="w3-text-light-grey" style="margin: 2px">Things</h4>
 							<div id="ConnectedThingsCon" style="padding-bottom: 10px;"></div>
@@ -573,7 +588,7 @@ var views = [getById("taxoNavCard"),getById("searchSection"),getById("bmSectionW
 
 var buttons = [getById("NavigationButton"),getById("SearchButton"),getById("BookmarkListButton"),getById("BookmarkTreeButton"),getById("InfoButton")];
 
-var menus = [getById("contextMenu"),getById("addNewQueryMenu"),getById("addNewBmMenu"),getById("infoBox"),getById("connectBmToConceptMenu")];
+var menus = [getById("contextMenu"),getById("addNewQueryMenu"),getById("addNewBmMenu"),getById("infoBox"),getById("connectBmToConceptMenu"),getById("addNewConceptMenu")];
 //#endregion
 
 //#region page navigation & setup
@@ -593,6 +608,7 @@ function setUpPage(){
 	addEnterKeyListener("newContextInput", addNewContext);
 	addEnterKeyListener("PassInput", logIn);
 	addEnterKeyListener("addConToBmInput", addTag);
+	addEnterKeyListener("newConceptDesc", addConcept);
 
 	ul.onclick = function(event) {
 		var target = getEventTarget(event);
@@ -700,6 +716,10 @@ function showMenu(menu){
 		else if(menuNum == 4){
 			getById("addConToBmInput").focus();
 		}
+		else if(menuNum == 5){
+			getById("newConceptName").focus();
+			getById("newConceptParent").textContent = "Parent: " + currTaxoName;
+		}
 	}
 }
 
@@ -740,7 +760,7 @@ function registerUser(){
 }
 //#endregion
 
-//#region taxo navigation
+//#region concept navigation
 function updateNavigation(ev,taxoWord){
 	if(ev != undefined){
 		ev.stopPropagation();
@@ -791,6 +811,11 @@ function updateNavigation(ev,taxoWord){
 }
 
 function addNavResults(results){
+	
+	if(results == undefined){
+		return;
+	}
+
 	for(var j = 0; j < results.length; j++){
 	
 		var myNode;
@@ -848,9 +873,21 @@ function addNavResults(results){
 			else {
 				card.style.background = blueAccentColor;
 				card.style.paddingBottom = "10px";
-			}			
+			}
+			
+			if(tmpResult[0].startsWith("userconcept")){
+				card.style.background = greenAccentColor;
+			}
 			
 			if(j == 0){
+				
+				if(tmpResult[0].startsWith("userconcept")){
+					getById("removeConceptButton").hidden = false;
+				}
+				else{
+					getById("removeConceptButton").hidden = true;
+				}
+
 				var textDiv = makeDiv("div");
 				var para = makeDiv("p",["w3-text-light-grey"],"5px");
 				para.appendChild(document.createTextNode(tmpResult[3]));
@@ -880,6 +917,53 @@ function addNavResults(results){
 	}
 	showLoadingOverlay(false);
 }
+
+function addConcept(){
+	var newConceptName = escape(getById("newConceptName").value);
+	var newConceptDesc = escape(getById("newConceptDesc").value);
+
+	var message = { fun: "addConcept", username: escape(currUsername), password: escape(currPassword), name: newConceptName, description: newConceptDesc, parent: currTaxoId };
+
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+		
+		showMessage("Concept was successfully saved");
+
+		taxoCache = {}; 
+		taxoCacheLoaded = {};
+		
+		updateNavigation(event,currTaxoId);
+		showLoadingOverlay(false);
+	});
+}
+
+function removeConcept(){
+
+	var message = { fun: "removeConcept", username: escape(currUsername), password: escape(currPassword), id: currTaxoId };
+
+	makeAjaxCall(JSON.stringify(message)).then(function(result) 
+	{
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
+
+		var myObj = JSON.parse(result);
+
+		if(myObj.result == "things_connected_to_this_concept"){
+			showMessage("Concept cannot be deleted because things are connected to it!");
+		}
+		else{
+			showMessage("Concept was successfully deleted");
+			taxoCache = {}; 
+			taxoCacheLoaded = {};
+			updateNavigation(event,"00001740");
+		}
+
+		showLoadingOverlay(false);
+	});
+}
+
 //#endregion
 
 //#region taxo search
@@ -1585,11 +1669,13 @@ function addTag(){
 
 		var myObj = JSON.parse(result);
 
-		showLoadingOverlay(false);
 		bmTreeNeedsUpdate = true;
 		similarBmsCache = {};
+		taxoCache = {};
+		taxoCacheLoaded = {};
 		getBms();
 		updateNavigation(event,currTaxoId);
+		showLoadingOverlay(false);
 		showMenu(0);
 	}); 
 }
@@ -1956,7 +2042,7 @@ function populateTreeView(results){
 	}
 
 	if(resultsLength > 0){	
-		populateTreeViewHelper(myNode, results)
+		populateTreeViewHelper(myNode, results);
 		var toggler = document.getElementsByClassName("caret");
 		var i;
 
