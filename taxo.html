@@ -567,7 +567,7 @@ var taxoIndexAddress = "http://localhost/taxoIndex.txt";
 
 var windowWidth = window.outerWidth;
 
-var currUsername, currPassword, currTaxoId, currTaxoName;
+var currUsername, currPassword, currTaxoId = "00001740", currTaxoName;
 
 var userBookmarks = [], bmsDict = {}, currBookmarks = [], taxoIndex = [], currentDetails = "";
 
@@ -657,10 +657,8 @@ function loadTaxoIndex() {
 
 async function loggedIn(){
 	switchView(2);
-
 	getById("userNameLabel").textContent = currUsername;
 
-	updateNavigation(event,"00001740");
 	await getBms();
 	await getContexts(0);
 	
@@ -734,6 +732,8 @@ function logIn(){
 	
 	var message = { fun: "login", username: escape(currUsername), password: escape(currPassword) };
 
+	showLoadingOverlay(true);
+
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
 		if(result == ""){ showMessage("Connection error. Please try again"); return; }
@@ -743,6 +743,9 @@ function logIn(){
 		
 		if(myObj.result == "success"){
 			loggedIn();
+		}
+		else{
+			showLoadingOverlay(false);
 		}
 	});
 }
@@ -761,7 +764,7 @@ function registerUser(){
 //#endregion
 
 //#region concept navigation
-function updateNavigation(ev,taxoWord){
+function updateNavigation(ev,taxoWord,switchViewBool = true){
 	if(ev != undefined){
 		ev.stopPropagation();
 	}
@@ -778,7 +781,9 @@ function updateNavigation(ev,taxoWord){
 
 	if(taxoCache[taxoWord] != undefined){
 		addNavResults(taxoCache[taxoWord]);
-		switchView(1);
+		if(switchViewBool){
+			switchView(1);
+		}
 
 		if(taxoCached){	return;	}
 
@@ -802,10 +807,9 @@ function updateNavigation(ev,taxoWord){
 		if(taxoCachedPartially == false){
 			addNavResults(taxoCache[taxoWord]);
 
-			if(firstLoadDoNotShowTaxoNav == false){
+			if(switchViewBool){
 				switchView(1);
 			}
-			firstLoadDoNotShowTaxoNav = false;
 		}
 	});
 }
@@ -1162,6 +1166,7 @@ function getBms(){
 		}
 
 		addUserBms(myObj.result);
+		updateNavigation(event,currTaxoId,false);
 		return 1;
 	});
 }
@@ -1671,10 +1676,7 @@ function addTag(){
 
 		bmTreeNeedsUpdate = true;
 		similarBmsCache = {};
-		taxoCache = {};
-		taxoCacheLoaded = {};
 		getBms();
-		updateNavigation(event,currTaxoId);
 		showLoadingOverlay(false);
 		showMenu(0);
 	}); 
@@ -2059,7 +2061,7 @@ function populateTreeViewHelper(parent, children){
 	var card = makeDiv("li",["w3-round"],"1px 12px","1px 3px",darkerShadeColor);
 	var header = makeDiv("span",["unselectable","caret","w3-text-light-grey"],undefined,"2px 5px",darkerShadeColor);
 	header.appendChild(document.createTextNode(children[0][1].split(",")[0]));
-	var btn = makeButton("->", "updateNavigation(event,'"+children[0][0]+"')", buttonColor, "0px 5px");
+	var btn = makeButton("->", "updateNavigation(event,'"+children[0][0]+"')", darkerShadeColor, "0px 5px");
 	btn.style.padding = "0px 5px";
 	header.appendChild(btn);
 	card.appendChild(header);
