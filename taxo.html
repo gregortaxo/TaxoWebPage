@@ -2059,6 +2059,9 @@ function populateTreeViewHelper(parent, children){
 	var card = makeDiv("li",["w3-round"],"1px 12px","1px 3px",darkerShadeColor);
 	var header = makeDiv("span",["unselectable","caret","w3-text-light-grey"],undefined,"2px 5px",darkerShadeColor);
 	header.appendChild(document.createTextNode(children[0][1].split(",")[0]));
+	var btn = makeButton("->", "updateNavigation(event,'"+children[0][0]+"')", buttonColor, "0px 5px");
+	btn.style.padding = "0px 5px";
+	header.appendChild(btn);
 	card.appendChild(header);
 	parent.appendChild(card);
 
