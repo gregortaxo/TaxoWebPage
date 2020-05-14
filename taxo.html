@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<script src="https://code.jquery.com/jquery-git2.js"></script>
 <style>
 .unselectable {
     -webkit-touch-callout: none;
@@ -181,7 +180,7 @@ textarea:focus {
 
 .tooltip .tooltiptextright {
   visibility: hidden;
-  min-width: 300px;
+  min-width: 400px;
   background-color: #202225;
   color: #fff;
   text-align: center;
@@ -191,8 +190,8 @@ textarea:focus {
   /* Position the tooltip */
   position: absolute;
   z-index: 50000;
-  top: 0%;
-  left: 100%;
+  top: -100%;
+  left: 90%;
 }
 
 .tooltip:hover .tooltiptextright {
@@ -325,7 +324,8 @@ li:hover {
 	<div id="connectBmToConceptMenu" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
 			transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;
 			display: flex;  flex-direction: column; max-height: 75%;  overflow: hidden;">
-			<h4 class="w3-text-light-grey">Add Concept To Thing</h4>
+			<h4 class="w3-text-light-grey" style="margin-bottom: 0px">Add concept to thing</h4>
+			<div class="w3-text-light-grey" style="margin-bottom: 10px" id="addConceptToThingConceptName"></div>
 			<section class = "w3-center">
 				<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter Thing Name" id="addConToBmInput" onkeyup="filter()"> </input>
 				<p>
@@ -339,13 +339,34 @@ li:hover {
 
 	<div id="addNewConceptMenu" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
 	transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
-		<h4 class="w3-text-light-grey" style="margin-bottom: 0px">Add new concept</h4>
+		<h4 class="w3-text-light-grey" style="margin-bottom: 0px">Add concept</h4>
 		<div class="w3-text-light-grey" style="margin-bottom: 10px" id="newConceptParent"></div>
 		<section class = "w3-center">
 			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter concept name" id="newConceptName" style="margin-bottom: 5px;"/>
 			<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter description" id="newConceptDesc" style="margin-bottom: 5px;"/>
 		</section>
 		<button class="w3-button w3-text-light-grey w3-round" style="margin-bottom: 10px; margin-top: 10px; background: #4f545c;" onclick="addConcept()">Add</button>
+	</div>
+
+	<div id="findConceptsMenu" class="w3-card-2 w3-rounded outer" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
+	transform: translate(-50%, -50%); opacity:0.99; z-index: 1001; padding: 10px; text-align: center; background: #2f3136;">
+		<h4 class="w3-text-light-grey" style="margin-bottom: 0px">Find concepts</h4>
+		<div class="parent"  style="width:100%; margin-top: 10px; margin-bottom: 5px;">
+			<section class = "w3-center" style="width: 78%">
+				<form autocomplete="off" action="/action_page.php">
+					<div class="autocomplete" style="width:100%;">
+						<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter taxonomy concept" id="ConceptSearchInput">
+					</div>
+				</form>
+			</section>
+			<div style="padding: 1px; width:20%; margin-left: 1%;">
+				<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 5px; background: #4f545c"
+						onclick="searchTaxo()">Find Concepts</button>
+			</div>
+		</div>
+		<div class="inner">
+			<div id="taxoSearchCon"> </div>
+		</div>
 	</div>
 
 	<div id="infoBox" class="w3-card-2 w3-rounded" style="width: 20cm; position: absolute;  top: 50%; left: 50%;
@@ -403,7 +424,7 @@ li:hover {
 														onclick="searchBms()">Find Things</button>
 											</div>
 									</div>
-									<div class = "parent" style="margin: 10px 0px;">
+									<div class = "parent" style="margin: 10px 0px 10px 0px;">
 										<select class="w3-button w3-round w3-text-light-grey" name="ChildrenDropdown" id="ChildrenDropdown" style="border: 0px; background: #4f545c; width: 30%;">
 											<option value="1">With Children</option>
 											<option value="2">Without Children</option>
@@ -420,24 +441,10 @@ li:hover {
 										</div>
 										<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%;" onclick="showMenu(2)">Add To Context</button>
 									</div>
-									<div class="parent"  style="width:100%; margin-top: 10px; margin-bottom: 5px;">
-											<section class = "w3-center" style="width: 78%">
-												<form autocomplete="off" action="/action_page.php">
-													<div class="autocomplete" style="width:100%;">
-														<input class="w3-text-light-grey w3-round" type="text" placeholder="Enter taxonomy concept" id="ConceptSearchInput">
-													</div>
-												</form>
-											</section>
-											<div style="padding: 1px; width:20%; margin-left: 1%;">
-												<button class="w3-button w3-text-light-grey w3-round w3-center" style=" width:100%; margin-top: 5px; background: #4f545c"
-														onclick="searchTaxo()">Find Concepts</button>
-											</div>
-									</div>
+									<button class="w3-button w3-text-light-grey w3-round w3-center" style="background: #4f545c; width: 30%; margin-top: 0px;" onclick="showMenu(7)">Concept Search</button>
 								</div>
-	
 								<div class="inner">
 									<div id="bmSearchCon"> </div>
-									<div id="taxoSearchCon"> </div>
 								</div>
 							</div>
 							<br>
@@ -469,9 +476,11 @@ li:hover {
 					<div style="margin-left: 15px; margin-right: 15px; margin-top: 15px">
 						<div id="taxoNavConWord"> </div>
 						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
+							onclick="showMenu(7)">Search</button>
+						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
 								onclick="showMenu(5)">Add To Thing</button>
 						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
-								onclick="showMenu(6)">Add New Concept</button>
+								onclick="showMenu(6)">Add Concept</button>
 						<button class="w3-button w3-text-light-grey w3-round" style="background: #4f545c; margin-top: 10px; margin-bottom: 15px;"  
 								id="removeConceptButton" onclick="removeConcept()">Delete Concept</button>
 						<div id="ConnectedThings" class="w3-container w3-center w3-content w3-card-2" style="background: #36393f;" hidden>
@@ -539,7 +548,7 @@ li:hover {
 					<div>
 						<div align="left" style="color: #747880; font-weight: bold; ">Username</div> 
 						<div align="left" class = "w3-text-light-grey" id="userNameLabel"></div>
-						<div align="left" style="color: #747880; font-weight: bold; ">Number Of User Things</div> 
+						<div align="left" style="color: #747880; font-weight: bold; ">Number of user things</div> 
 						<div align="left" class = "w3-text-light-grey" id="numOfBmLabel"></div>
 					</div>
 					<button align="right" class="w3-button w3-text-light-grey w3-round" onclick="reloadPage()" style="background: #7289da; height: 32px;">Log Out</button>
@@ -555,9 +564,6 @@ li:hover {
 //#region variables
 //var serverAddress = "https://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoForward.php";
 //var taxoIndexAddress = "https://www.studenti.famnit.upr.si/~89141014/PHPfolder/taxoIndex.txt";
-
-// var serverAddress = "http://89.143.68.172/taxoForwardLocal.php";
-// var taxoIndexAddress = "http://89.143.68.172/taxoIndex.txt";
 
 // var serverAddress = "http://192.168.1.11/taxoForwardLocal.php";
 // var taxoIndexAddress = "http://192.168.1.11/taxoIndex.txt";
@@ -588,7 +594,7 @@ var views = [getById("taxoNavCard"),getById("searchSection"),getById("bmSectionW
 
 var buttons = [getById("NavigationButton"),getById("SearchButton"),getById("BookmarkListButton"),getById("BookmarkTreeButton"),getById("InfoButton")];
 
-var menus = [getById("contextMenu"),getById("addNewQueryMenu"),getById("addNewBmMenu"),getById("infoBox"),getById("connectBmToConceptMenu"),getById("addNewConceptMenu")];
+var menus = [getById("contextMenu"),getById("addNewQueryMenu"),getById("addNewBmMenu"),getById("infoBox"),getById("connectBmToConceptMenu"),getById("addNewConceptMenu"),getById("findConceptsMenu")];
 //#endregion
 
 //#region page navigation & setup
@@ -667,6 +673,7 @@ async function loggedIn(){
 }
 
 function switchView(view){
+	showMenu(0);
 	for(var i = 0; i < views.length; i++){
 		if(i == view - 1){
 			views[i].hidden = false;
@@ -679,6 +686,16 @@ function switchView(view){
 			buttons[i].style.background = backgroundColor;
 		}
 	}
+}
+
+function getCurrentView(){
+	for(var i = 0; i < views.length; i++){
+			if(views[i].hidden == false){
+				return i;
+			}
+	}
+
+	return 0;
 }
 
 function showMenu(menu){
@@ -713,10 +730,15 @@ function showMenu(menu){
 		}
 		else if(menuNum == 4){
 			getById("addConToBmInput").focus();
+			getById("addConceptToThingConceptName").textContent = "Concept: " + currTaxoName;
 		}
 		else if(menuNum == 5){
 			getById("newConceptName").focus();
 			getById("newConceptParent").textContent = "Parent: " + currTaxoName;
+		}
+		else if(menuNum == 6){
+			getById("ConceptSearchInput").focus();
+			removeChildren(getById("taxoSearchCon"));
 		}
 	}
 }
@@ -736,7 +758,7 @@ function logIn(){
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
-		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
 		var myObj = JSON.parse(result);
 		getById("responseField").textContent = myObj.result;
@@ -755,7 +777,7 @@ function registerUser(){
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
-		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
 		var myObj = JSON.parse(result);
 		getById("responseField").textContent = myObj.result;
@@ -923,6 +945,8 @@ function addNavResults(results){
 }
 
 function addConcept(){
+	showLoadingOverlay(true);
+
 	var newConceptName = escape(getById("newConceptName").value);
 	var newConceptDesc = escape(getById("newConceptDesc").value);
 
@@ -939,12 +963,13 @@ function addConcept(){
 		taxoCache = {}; 
 		taxoCacheLoaded = {};
 		
-		updateNavigation(event,currTaxoId);
+		updateNavigation(event,currTaxoId,false);
 		showLoadingOverlay(false);
 	});
 }
 
 function removeConcept(){
+	showLoadingOverlay(true);
 
 	var message = { fun: "removeConcept", username: escape(currUsername), password: escape(currPassword), id: currTaxoId };
 
@@ -961,7 +986,7 @@ function removeConcept(){
 			showMessage("Concept was successfully deleted");
 			taxoCache = {}; 
 			taxoCacheLoaded = {};
-			updateNavigation(event,"00001740");
+			updateNavigation(event,"00001740",false);
 		}
 
 		showLoadingOverlay(false);
@@ -1005,9 +1030,6 @@ function addSearchResults(results){
 	var myNode = getById("taxoSearchCon");
 	removeChildren(myNode);
 
-	var bmsNode = getById("bmSearchCon");
-	removeChildren(bmsNode);
-
 	var resultsLength = 0;
 
 	if(results != undefined){
@@ -1026,9 +1048,8 @@ function addSearchResults(results){
 		var card = makeDiv("div", ["w3-card-2","w3-round","parent","testhoverGray"],"7px","3px",buttonColor);
 
 		var titleSplit = results[i][1].split(",");
-		var tmp = "addToSearchField('"+titleSplit[0]+"','"+results[i][0]+"')";
+		var tmp = "updateNavigation(event,'"+results[i][0]+"')";
 		card.setAttribute("onclick",tmp);
-
 		var hoverArea = makeDiv("div", ["w3-center","w3-round","tooltip","testhover"], undefined, "5px", darkerShadeColor, "10%");
 		card.appendChild(hoverArea);
 
@@ -1050,8 +1071,14 @@ function addSearchResults(results){
 		hoverArea.appendChild(tooltiptextDiv);
 
 		var butPara = document.createElement("p");
-		butPara.appendChild(makeButton("Open", "updateNavigation(event,'"+results[i][0]+"')", buttonColor, "0px 0px 0px 5px"));
-		butPara.appendChild(makeButton("Add to context", "addTaxoTagToContext(event,'"+results[i][0]+"','"+results[i][1]+"')", greenAccentColor, "0px 0px 0px 5px"));
+		
+		if(getCurrentView() == 2){
+			butPara.appendChild(makeButton("Add To Thing", "addTag(event,'"+currentDetails+"','"+results[i][0]+"','"+results[i][1]+"')", greenAccentColor, "0px 0px 0px 5px"));
+		}
+		else{
+			butPara.appendChild(makeButton("Add To Thing Search", "addToSearchField(event,'"+titleSplit[0]+"','"+results[i][0]+"')", buttonColor, "0px 0px 0px 5px"));
+			butPara.appendChild(makeButton("Add To context", "addTaxoTagToContext(event,'"+results[i][0]+"','"+results[i][1]+"')", greenAccentColor, "0px 0px 0px 5px"));
+		}
 
 		tooltiptextDiv.appendChild(butPara);
 
@@ -1105,9 +1132,6 @@ function addBmSearchResults(bms){
 	var myNode = getById("bmSearchCon");
 	removeChildren(myNode);
 
-	var taxoNode = getById("taxoSearchCon");
-	removeChildren(taxoNode);
-
 	var bmsLength = 0;
 
 	if(bms != undefined){
@@ -1141,7 +1165,7 @@ function getBms(){
 
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
-		if(result == ""){ showMessage("Connection error. Please try again"); return; }
+		if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
 		var myObj = JSON.parse(result);
 		bmsDict = {};
@@ -1172,7 +1196,6 @@ function getBms(){
 }
 
 function addUserBms(bms){
-	//add tag to bm list
 	currBookmarks = [];
 
 	if(bms.length > 0){
@@ -1181,13 +1204,12 @@ function addUserBms(bms){
 		}
 	}
 
-	var list = getById("bmListMenu");
-	removeChildren(list);
+	removeChildren(ul);
 
 	for (var i = 0; i <  bms.length; i++) {
 		var item = document.createElement('li');
 		item.appendChild(document.createTextNode(bms[i][0]));
-		list.appendChild(item);
+		ul.appendChild(item);
 	}
 
 	//user bm list
@@ -1213,15 +1235,17 @@ function addUserBms(bms){
 }
 
 function filter() {
-        var value = getById("addConToBmInput").value.toLowerCase();
-        $("#bmListMenu > li").each(function() {
-            if ($(this).text().toLowerCase().search(value) > -1) {
-                $(this).show();
+		var value = getById("addConToBmInput").value.toLowerCase();
+		var listLen =ul.children.length;
+		for(var i = 0; i<listLen; i++){
+			var child = ul.children[i]; 
+			if (child.textContent.toLowerCase().search(value) > -1) {
+                child.hidden = false;
             }
             else {
-                $(this).hide();
+                child.hidden = true;
             }
-        });
+		}
     }
 
 function getEventTarget(e) {
@@ -1271,7 +1295,8 @@ function showBmDetails(bookmark, showDetails){
 
 	card.appendChild(a);
 	card.appendChild(makeButton("Download", "getBookmarkFile('"+bm[0]+"')", blueAccentColor, "5px 5px 0px 0px"));
-	card.appendChild(makeButton("Delete", "removeBookmark('"+bm[0]+"')", buttonColor, "5px 5px 0px 0px"));	
+	card.appendChild(makeButton("Add concept", "showMenu(7)", buttonColor, "5px 5px 0px 0px"));
+	card.appendChild(makeButton("Delete", "removeBookmark('"+bm[0]+"')", buttonColor, "5px 5px 0px 0px"));
 
 	var connectedConcepts = makeDiv("div",undefined,undefined,"0px");
 
@@ -1316,7 +1341,7 @@ function loadFilePreview(bookmark){
 
 		makeAjaxCall(JSON.stringify(message)).then(function(result) 
 		{
-			if(result == ""){ showMessage("Connection error. Please try again"); return; }
+			if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
 			var myObj = JSON.parse(result);
 
@@ -1382,7 +1407,7 @@ function loadSimilarBms(bookmark){
 
 		makeAjaxCall(JSON.stringify(message2)).then(function(result) 
 		{
-			if(result == ""){ showMessage("Connection error. Please try again"); return; }
+			if(result == ""){ showMessage("Connection error. Please try again"); showLoadingOverlay(false); return; }
 
 			var myObj = JSON.parse(result);
 
@@ -1656,8 +1681,22 @@ function removeBookmark(bmToDelete){
 	});
 }
 
-function addTag(){
-	var bmName = getById("addConToBmInput").value;
+function addTag(ev, bmName = undefined, taxoId = undefined, taxoName = undefined){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
+	
+	if(bmName == undefined){
+		bmName = getById("addConToBmInput").value;
+	}
+
+	if(taxoId == undefined){
+		taxoId = currTaxoId;
+	}
+
+	if(taxoName == undefined){
+		taxoName = currTaxoName;
+	}
 
 	if(!(currBookmarks.indexOf(bmName) > -1)){
 		showMessage("This thing does not exist");
@@ -1666,7 +1705,7 @@ function addTag(){
 
 	showLoadingOverlay(true);
 	
-	var message = { fun: "addTaxoTag", username: escape(currUsername), password: escape(currPassword), name: escape(bmName), taxoId: currTaxoId, taxoName: currTaxoName };
+	var message = { fun: "addTaxoTag", username: escape(currUsername), password: escape(currPassword), name: escape(bmName), taxoId: taxoId, taxoName: taxoName };
 	
 	makeAjaxCall(JSON.stringify(message)).then(function(result) 
 	{
@@ -1806,7 +1845,7 @@ function setUpContext(contextToShow){
 			var nodeTmp = document.createTextNode(tmpTitle.replace(/,/g, ", "));
 
 			var tmp = tmpTitle.split(",");
-			tmp = "addToSearchField('"+tmp[0]+"','"+context[1][i][0]+"')";
+			tmp = "addToSearchField(event,'"+tmp[0]+"','"+context[1][i][0]+"')";
 			cardForTag.setAttribute("onclick",tmp);
 
 			var par = makeDiv("div", ["unselectable", "w3-text-light-grey"]);
@@ -1868,7 +1907,10 @@ function updateSearchFromContextQuery(query){
 	getById("BmSearchInput").value = query;
 }
 
-function addToSearchField(text,id){
+function addToSearchField(ev,text,id){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
 	var searchField = getById("BmSearchInput").value;
 
 	if(searchField == ""){
@@ -1877,6 +1919,8 @@ function addToSearchField(text,id){
 	else{
 		getById("BmSearchInput").value += " " + "["+text+","+id+"]";
 	}
+
+	switchView(2);
 }
 
 function updateContextDropdown(){
@@ -1897,15 +1941,15 @@ function selectContext(){
 }
 
 function addTaxoTagToContext(ev,taxoId,taxoName){
+	if(ev != undefined){
+		ev.stopPropagation();
+	}
+
 	if(contexts.length == 0){
 		return;
 	}
 	contexts[currentContext][1].push([taxoId, taxoName]);
 	updateContext(contexts[currentContext][0]);
-
-	if(ev != undefined){
-		ev.stopPropagation();
-	}
 }
 
 function saveQueryToContext(){
